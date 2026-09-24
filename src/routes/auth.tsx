@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { setRememberMe } from "@/hooks/use-session-expiry";
 import appIcon from "@/assets/app-icon.png";
@@ -64,19 +63,6 @@ function AuthPage() {
     }
   }
 
-  async function handleGoogle() {
-    setBusy(true);
-    try {
-      setRememberMe(remember);
-      const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-      if (r.error) toast.error(r.error.message);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro Google");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <div className="relative grid min-h-screen place-items-center overflow-hidden bg-[#0b0f1c] p-4">
       {/* Radial gradient depth */}
@@ -129,15 +115,6 @@ function AuthPage() {
             {busy ? "..." : "Entrar"}
           </button>
         </form>
-
-        <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" /> ou <div className="h-px flex-1 bg-border" />
-        </div>
-
-        <button onClick={handleGoogle} disabled={busy}
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50">
-          Entrar com Google
-        </button>
 
         <p className="mt-4 text-center text-[11px] text-muted-foreground">
           Sem "manter-me conectado" a sessão termina após 8h sem atividade.
