@@ -198,14 +198,8 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
 
 
 /* Utilitários neon */
-@utility neon-text {
-  /* suavizado: já não usa glow, só a cor */
-}
 @utility neon-ring {
   box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 45%, transparent);
-}
-@utility neon-glow {
-  /* suavizado: sem drop-shadow */
 }
 
 /* Badge neon legível em qualquer tema: texto = foreground; a cor neon
