@@ -1130,11 +1130,11 @@ function Metric({
     <div data-metric className={`glass-card px-1 py-1.5 text-center md:px-2 ${big ? "relative overflow-hidden" : ""}`}>
       {big && (
         <div
-          className="pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-0 opacity-15"
           style={{
             background: accent
-              ? `radial-gradient(circle at 50% 80%, color-mix(in oklab, ${accent} 75%, transparent), transparent 70%)`
-              : "radial-gradient(circle at 50% 80%, color-mix(in oklab, var(--neon-green) 65%, transparent), transparent 70%)",
+              ? `radial-gradient(circle at 50% 80%, color-mix(in oklab, ${accent} 35%, transparent), transparent 70%)`
+              : "radial-gradient(circle at 50% 80%, color-mix(in oklab, var(--neon-green) 30%, transparent), transparent 70%)",
           }}
         />
       )}
