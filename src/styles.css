@@ -298,18 +298,13 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
 
 /* Letreiro néon LoureShopping — usa as cores do tema ativo */
 .pds-neon-word {
-  background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-green), var(--neon-blue));
-  background-size: 300% 100%;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: pds-neon-flow 8s linear infinite;
   /* Mobile first: cabe em ~360 px sem cortar */
   font-size: clamp(1.85rem, 6.8vw, 2.5rem);
   letter-spacing: 0.04em;
-}
-@keyframes pds-neon-flow {
-  to { background-position: 300% 0; }
 }
 @media (min-width: 640px) {
   .pds-neon-word {
@@ -355,30 +350,7 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
   50%      { opacity: .85; transform: translateX(-50%) scale(1.12); }
 }
 .pds-brand { position: relative; }
-.pds-brand::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -22%;
-  width: 78%;
-  height: 62%;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center,
-    color-mix(in oklab, var(--neon-pink) 55%, transparent),
-    transparent 70%);
-  filter: blur(26px);
-  animation: pds-stage-kf 4.2s ease-in-out infinite;
-  pointer-events: none;
-}
-.pds-brand-reflection {
-  transform: scaleY(-1);
-  opacity: .18;
-  filter: blur(2px);
-  mask-image: linear-gradient(to bottom, transparent 35%, black 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 35%, black 100%);
-  pointer-events: none;
-}
+.pds-brand-reflection { display: none; }
 
 /* 8 — Fundo com grelha + partículas subtis */
 .pds-frame {
@@ -576,17 +548,11 @@ body::before {
   border: 2px solid color-mix(in oklab, currentColor 55%, transparent);
 }
 
-@keyframes neon-flicker {
-  0%, 17%, 19%, 22%, 63%, 65%, 100% { opacity: 1; filter: brightness(1); }
-  18%, 64% { opacity: .78; filter: brightness(.84); }
-  20% { opacity: .92; filter: brightness(1.18); }
-}
 @keyframes confetti-fall {
   0% { opacity: 0; transform: translate3d(0, -8vh, 0) rotate(0deg); }
   10% { opacity: 1; }
   100% { opacity: 0; transform: translate3d(14vw, 112vh, 0) rotate(680deg); }
 }
-@utility neon-flicker { animation: neon-flicker 5.5s steps(1, end) infinite; }
 .confetti-piece {
   position: absolute;
   top: -10vh;
