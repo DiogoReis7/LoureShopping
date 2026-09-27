@@ -16,7 +16,6 @@ import { NeonIcon, pickIcon, pickIconByCode } from "@/lib/product-icons";
 import { useNpsAlert, NPS_DET_THRESHOLD } from "@/hooks/use-nps-alert";
 import { AlertTriangle } from "lucide-react";
 import { IndividualNpsPanel } from "@/components/IndividualNpsPanel";
-import { IndividualChallengesPanel } from "@/components/IndividualChallengesPanel";
 import { isMedicalLeave, isMeeting, isSalesBlockedShift } from "@/lib/shift-state";
 
 
@@ -296,7 +295,6 @@ function IndividualPage() {
 
       <div className="p-1.5 md:p-3 max-w-[1400px] mx-auto">
         <NpsDetractorAlertForEmployee employeeId={empQ.data?.id} />
-        <IndividualChallengesPanel employeeId={empQ.data?.id} />
         <IndividualNpsPanel employeeId={empQ.data?.id} />
         <div className="grid gap-1.5 md:gap-2 lg:grid-cols-[300px_1fr]">
           {/* ===== Coluna 1: Colaborador + KPIs ===== */}

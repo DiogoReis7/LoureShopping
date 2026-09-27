@@ -5,8 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   ClipboardList, Users, Package,
   Calculator, Ticket, UserCircle, Menu, BarChart3, CalendarClock,
-  Lock, LogOut, Home, Search, Trophy, Plus, WifiOff, HeartHandshake, Activity, ShieldCheck, Coffee,
-  CalendarOff, Megaphone, Medal, MessagesSquare, MonitorSmartphone, Settings,
+  Lock, LogOut, Home, Search, Plus, WifiOff, HeartHandshake, Activity, ShieldCheck, Coffee,
+  CalendarOff, Megaphone, Settings,
 } from "lucide-react";
 import { classNames } from "@/lib/domain";
 import { useIsAdmin } from "@/hooks/use-is-admin";
@@ -32,7 +32,6 @@ const PRIMARY: NavItem[] = [
   { to: "/", label: "Início", icon: Home },
   { to: "/pds", label: "PDS", icon: BarChart3 },
   { to: "/individual", label: "Individuais", icon: UserCircle },
-  { to: "/desafios", label: "Desafios", icon: Trophy },
   { to: "/avisos", label: "Avisos", icon: Megaphone },
 ];
 
@@ -42,12 +41,9 @@ const MAIS: NavItem[] = [
   { to: "/sgf", label: "SGF", icon: Ticket },
   { to: "/ociosidade", label: "Ociosidade", icon: Coffee },
   { to: "/quadro-ios", label: "Quadro IOS", icon: ClipboardList },
-  { to: "/quiosque", label: "Quiosque", icon: MonitorSmartphone },
   { to: "/colaboradores", label: "Vendedores", icon: Users },
   { to: "/horarios", label: "Horários", icon: CalendarClock },
   { to: "/ausencias", label: "Ausências", icon: CalendarOff },
-  { to: "/reunioes", label: "Reuniões 1:1", icon: MessagesSquare },
-  { to: "/conquistas", label: "Conquistas", icon: Medal },
   { to: "/desempenho", label: "Desempenho", icon: Activity },
   { to: "/nps", label: "NPS", icon: HeartHandshake },
   { to: "/produtos", label: "Produtos", icon: Package },
@@ -63,7 +59,7 @@ const MOBILE_BAR: NavItem[] = [
   { to: "/", label: "Início", icon: Home },
   { to: "/pds", label: "PDS", icon: BarChart3 },
   { to: "/individual", label: "Indiv.", icon: UserCircle },
-  { to: "/desafios", label: "Desafios", icon: Trophy },
+  { to: "/colaboradores", label: "Equipa", icon: Users },
   { to: "/sgf", label: "SGF", icon: Ticket },
 ];
 

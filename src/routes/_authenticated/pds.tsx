@@ -14,7 +14,6 @@ import { PageHeader } from "@/components/AppShell";
 import { MonthDayPicker } from "@/components/MonthDayPicker";
 import { useSharedDate } from "@/hooks/useSharedDate";
 import { MONTHS_PT, monthRange, fmtNum, fmtSecsAsTime, ymd, classNames, initials, avatarGradient } from "@/lib/domain";
-import { Sparkline } from "@/components/Sparkline";
 import { NeonIcon, NeonBadge, pickIcon } from "@/lib/product-icons";
 import { computeProgress, METRIC_LABELS, REDUCTION_METRICS, type Metric } from "@/lib/challenges";
 
@@ -730,7 +729,7 @@ function PdsPage() {
               {/* Letreiro néon LOURESHOPPING — palco, reflexo e brilho pulsante */}
               <div
                 className="pds-brand min-h-[132px] sm:min-h-[172px] lg:min-h-[210px] overflow-hidden rounded-md border border-primary/40 bg-black/40 flex flex-col items-center justify-center"
-                style={{ boxShadow: "0 0 36px color-mix(in oklab, var(--neon-pink) 45%, transparent), inset 0 0 40px color-mix(in oklab, var(--neon-blue) 22%, transparent)" }}
+                style={{ boxShadow: "inset 0 0 24px color-mix(in oklab, var(--neon-blue) 10%, transparent)" }}
                 aria-label="LoureShopping"
               >
                 <span className="pds-neon-word neon-flicker select-none px-2 text-center font-black uppercase leading-none">
@@ -763,7 +762,6 @@ function PdsPage() {
                       style={{
                         background: "linear-gradient(135deg, var(--combina-continente), var(--combina-galp))",
                         color: "#fff",
-                        boxShadow: "0 0 18px color-mix(in oklab, var(--combina-continente) 45%, transparent)",
                       }}
                     >
                       <ShoppingCart className="h-6 w-6" />
@@ -771,7 +769,7 @@ function PdsPage() {
                     <div className="min-w-0">
                       <div
                         className="text-lg font-black uppercase tracking-[0.18em]"
-                        style={{ color: "var(--combina-continente)", textShadow: "0 0 16px color-mix(in oklab, var(--combina-continente) 70%, transparent)" }}
+                        style={{ color: "var(--combina-continente)" }}
                       >
                         Combina
                       </div>
@@ -805,8 +803,7 @@ function PdsPage() {
                       className={classNames("grid h-16 w-16 place-items-center rounded-full sm:h-[4.5rem] sm:w-[4.5rem]", combinaPop && "combina-pop")}
                       style={{
                         background: "radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--combina-continente) 35%, transparent), color-mix(in oklab, var(--combina-galp) 10%, transparent) 70%)",
-                        border: "2px solid color-mix(in oklab, var(--combina-continente) 75%, transparent)",
-                        boxShadow: "0 0 22px color-mix(in oklab, var(--combina-continente) 55%, transparent), inset 0 0 16px color-mix(in oklab, var(--combina-galp) 25%, transparent)",
+                        border: "2px solid color-mix(in oklab, var(--combina-continente) 55%, transparent)",
                       }}
                     >
                       <span className="kpi-neon text-3xl tabular-nums sm:text-4xl" style={{ color: "var(--combina-continente)" }}>
@@ -855,12 +852,12 @@ function PdsPage() {
               <Dialog open={combinaOpen} onOpenChange={setCombinaOpen}>
                 <DialogContent
                   className="max-w-md bg-[#0b0f1c]/95"
-                  style={{ borderColor: "color-mix(in oklab, var(--combina-continente) 55%, transparent)", boxShadow: "0 0 32px color-mix(in oklab, var(--combina-continente) 25%, transparent)" }}
+                  style={{ borderColor: "color-mix(in oklab, var(--combina-continente) 45%, transparent)" }}
                 >
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-base font-black uppercase tracking-wider">
                       <ShoppingCart className="h-5 w-5" style={{ color: "var(--combina-galp)" }} />
-                      <span style={{ color: "var(--combina-continente)", textShadow: "0 0 12px color-mix(in oklab, var(--combina-continente) 60%, transparent)" }}>
+                      <span style={{ color: "var(--combina-continente)" }}>
                         Combina
                       </span>
                       <span className="text-muted-foreground normal-case tracking-normal">· Adesões do dia</span>
@@ -893,7 +890,6 @@ function PdsPage() {
                                 style={{
                                   background: "linear-gradient(135deg, var(--combina-galp), var(--combina-continente))",
                                   color: "#fff",
-                                  boxShadow: "0 0 10px color-mix(in oklab, var(--combina-galp) 45%, transparent)",
                                 }}
                               >
                                 {initials(emp)}
@@ -1180,11 +1176,6 @@ function EmpRow({
   const ptsColor = medalColor ?? "var(--neon-blue)";
 
   const ratio = maxPts && maxPts > 0 ? Math.max(0, Math.min(1, pts / maxPts)) : 0;
-  // Tendência: hoje vs ontem (pontos)
-  const today = series.length ? series[series.length - 1] : pts;
-  const yesterday = series.length > 1 ? series[series.length - 2] : 0;
-  const delta = today - yesterday;
-  const trendColor = delta > 0 ? "var(--neon-green)" : delta < 0 ? "var(--destructive)" : "var(--neon-blue)";
   return (
     <div
       role="button"
@@ -1202,15 +1193,13 @@ function EmpRow({
         rank === 0
           ? {
               color: "var(--foreground)",
-              borderColor: "color-mix(in oklab, var(--neon-yellow) 70%, transparent)",
-              background: "linear-gradient(90deg, color-mix(in oklab, var(--neon-yellow) 22%, transparent), transparent 65%)",
-              boxShadow: "0 0 16px color-mix(in oklab, var(--neon-yellow) 35%, transparent)",
+              borderColor: "color-mix(in oklab, var(--neon-yellow) 55%, transparent)",
+              background: "linear-gradient(90deg, color-mix(in oklab, var(--neon-yellow) 14%, transparent), transparent 65%)",
             }
           : medalColor
-            ? { color: medalColor, background: `linear-gradient(90deg, color-mix(in oklab, ${medalColor} 14%, transparent), transparent 60%)` }
+            ? { color: medalColor, background: `linear-gradient(90deg, color-mix(in oklab, ${medalColor} 10%, transparent), transparent 60%)` }
             : {
-                borderColor: `color-mix(in oklab, ${perfColor} 55%, transparent)`,
-                boxShadow: `0 0 14px color-mix(in oklab, ${perfColor} 22%, transparent)`,
+                borderColor: `color-mix(in oklab, ${perfColor} 40%, transparent)`,
               }
       }
     >
@@ -1220,7 +1209,7 @@ function EmpRow({
              {medal && <span className="medal-float text-base leading-none" title={`Top ${(rank ?? 0) + 1}`}>{medal}</span>}
              <span
                className="avatar-grad grid h-10 w-10 shrink-0 place-items-center rounded-full text-[12px] font-black"
-               style={{ background: avatarGradient(e.nome), boxShadow: `0 0 16px color-mix(in oklab, ${perfColor} 45%, transparent)` }}
+               style={{ background: avatarGradient(e.nome) }}
                aria-hidden
              >
                {initials(e.nome)}
@@ -1254,7 +1243,6 @@ function EmpRow({
               style={{
                 width: `${ratio * 100}%`,
                 background: `linear-gradient(90deg, color-mix(in oklab, ${ptsColor} 45%, transparent), ${ptsColor})`,
-                boxShadow: pts > 0 ? `0 0 8px color-mix(in oklab, ${ptsColor} 70%, transparent)` : undefined,
               }}
             />
           </div>
@@ -1275,21 +1263,6 @@ function EmpRow({
         <Mini label="Alarme" value={alarmes} />
         <Mini label="Energia" value={energia} />
         <Mini label="Marcações" value={marcacoes} />
-      </div>
-      <div className="mt-1.5 grid h-9 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-md border border-border/70 bg-background/65 px-2">
-        <div className="h-7 min-w-0">
-          <Sparkline
-            values={series.length > 1 ? series : [0, pts]}
-            color={trendColor}
-            label={`Tendência de pontos de ${e.nome} nos últimos 7 dias`}
-          />
-        </div>
-        <div className="min-w-[3.25rem] text-right">
-          <div className="text-[8px] font-bold uppercase text-muted-foreground">vs. ontem</div>
-          <div className="text-[10px] font-black tabular-nums" style={{ color: trendColor }}>
-            {delta > 0 ? "+" : ""}{fmtNum(delta, 2)}
-          </div>
-        </div>
       </div>
     </div>
   );

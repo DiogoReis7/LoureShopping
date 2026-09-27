@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { withoutManagers } from "@/lib/manager";
 import { ymd, fmtNum, MONTHS_PT, classNames, initials } from "@/lib/domain";
 import { NeonIcon } from "@/lib/product-icons";
-import { MARCACOES_CODES, EXCLUDED, computeProgress, METRIC_LABELS, type Metric } from "@/lib/challenges";
+import { MARCACOES_CODES, EXCLUDED } from "@/lib/challenges";
 
 export const Route = createFileRoute("/_authenticated/tv")({
   head: pageHead("Modo TV · PDS LoureShopping", "Ranking de vendas em tempo real para o ecrã da loja."),
@@ -22,14 +22,6 @@ export const Route = createFileRoute("/_authenticated/tv")({
 type Employee = { id: string; nome: string; ativo: boolean; ordem: number; categoria: string | null };
 type Product = { id: string; codigo: string; peso: number };
 type Sale = { employee_id: string; product_id: string; quantidade: number };
-type ChallengeRow = {
-  id: string; titulo: string; tipo: string; scope: string; metric: string;
-  target: number; premio: string | null; start_date: string; end_date: string;
-};
-type ChallengeView = {
-  c: ChallengeRow; total: number; target: number; pct: number;
-  ranking: { nome: string; v: number }[];
-};
 
 
 
@@ -96,39 +88,6 @@ function TvPage() {
     refetchInterval: paused ? false : 15_000,
   });
 
-  // desafios ativos + vendas do período de cada um
-  const chQ = useQuery({
-    queryKey: ["tv-challenges", dayIso],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("challenges")
-        .select("id,titulo,tipo,scope,metric,target,premio,start_date,end_date")
-        .eq("ativo", true)
-        .lte("start_date", dayIso)
-        .gte("end_date", dayIso)
-        .order("end_date");
-      return (data ?? []) as ChallengeRow[];
-    },
-    refetchInterval: paused ? false : 60_000,
-  });
-
-  const chSalesQ = useQuery({
-    queryKey: ["tv-challenge-sales", chQ.data?.map((c) => `${c.start_date}:${c.end_date}`).join("|") ?? ""],
-    enabled: (chQ.data?.length ?? 0) > 0,
-    queryFn: async () => {
-      const list = chQ.data ?? [];
-      const min = list.reduce((a, c) => (c.start_date < a ? c.start_date : a), list[0].start_date);
-      const max = list.reduce((a, c) => (c.end_date > a ? c.end_date : a), list[0].end_date);
-      const { data } = await supabase
-        .from("sales_entries")
-        .select("employee_id,product_id,quantidade,data")
-        .gte("data", min).lte("data", max);
-      return (data ?? []) as (Sale & { data: string })[];
-    },
-    refetchInterval: paused ? false : 30_000,
-  });
-
-
   const products = prodQ.data ?? [];
   const employees = empQ.data ?? [];
   const sales = salesQ.data ?? [];
@@ -180,32 +139,13 @@ function TvPage() {
   const top3 = rows.slice(0, 3);
   const rest = rows.slice(3);
 
-  // progresso dos desafios ativos
-  const challenges = useMemo(() => {
-    const list = chQ.data ?? [];
-    const all = chSalesQ.data ?? [];
-    const empName = new Map(employees.map((e) => [e.id, e.nome]));
-    return list.map((c) => {
-      const inRange = all.filter((s) => s.data >= c.start_date && s.data <= c.end_date);
-      const { total, byEmp } = computeProgress(inRange, products, c.metric as Metric);
-      const ranking = [...byEmp.entries()]
-        .map(([id, v]) => ({ nome: empName.get(id) ?? "—", v }))
-        .sort((a, b) => b.v - a.v)
-        .slice(0, 5);
-      const target = Number(c.target) || 0;
-      const pct = target > 0 ? Math.min(100, (total / target) * 100) : 0;
-      return { c, total, target, pct, ranking };
-    });
-  }, [chQ.data, chSalesQ.data, employees, products]);
-
   const panels = useMemo(() => {
     const list: { key: string; label: string }[] = [
       { key: "rank", label: "Ranking" },
       { key: "ind", label: "Indicadores" },
     ];
-    if (challenges.length > 0) list.push({ key: "ch", label: "Desafios" });
     return list;
-  }, [challenges.length]);
+  }, []);
 
   const panel = panels[panelIdx % panels.length]?.key ?? "rank";
 
@@ -273,8 +213,6 @@ function TvPage() {
             <Podium top3={top3} />
             <RestList rest={rest} />
           </div>
-        ) : panel === "ch" ? (
-          <ChallengesPanel items={challenges} />
         ) : (
           <IndicatorsPanel totals={totals} totalPts={totalPts} />
         )}
@@ -367,54 +305,6 @@ function RestList({ rest }: { rest: { e: Employee; pts: number; qty: number }[] 
   );
 }
 
-function ChallengesPanel({ items }: { items: ChallengeView[] }) {
-  if (items.length === 0) {
-    return (
-      <div className="grid h-full place-items-center text-3xl font-black text-white/40">
-        Sem desafios ativos
-      </div>
-    );
-  }
-  const shown = items.slice(0, 3);
-  return (
-    <div className={classNames("grid h-full gap-4 p-6", shown.length === 1 ? "grid-cols-1" : shown.length === 2 ? "grid-cols-2" : "grid-cols-3")}>
-      {shown.map(({ c, total, target, pct, ranking }) => {
-        const color = pct >= 100 ? "var(--neon-green)" : pct >= 60 ? "var(--neon-yellow)" : "var(--neon-pink)";
-        return (
-          <div key={c.id} className="flex min-h-0 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-            style={{ boxShadow: `inset 0 0 40px color-mix(in oklab, ${color} 12%, transparent)` }}>
-            <div className="text-[11px] uppercase tracking-[0.3em] text-white/50">
-              {c.scope === "loja" ? "Loja" : "Individual"} · {METRIC_LABELS[c.metric as Metric] ?? c.metric}
-            </div>
-            <div className="truncate text-2xl font-black">{c.titulo}</div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="tabular-nums text-5xl font-black" style={{ color, textShadow: `0 0 22px ${color}` }}>
-                <AnimatedNumber value={total} formatter={(value) => fmtNum(value, 2)} />
-              </span>
-              <span className="text-lg font-bold text-white/50">/ {fmtNum(target, 2)}</span>
-            </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(2, pct)}%`, background: color, boxShadow: `0 0 14px ${color}` }} />
-            </div>
-            <div className="mt-3 min-h-0 flex-1 space-y-1 overflow-hidden">
-              {ranking.map((r, i) => (
-                <div key={r.nome + i} className="flex items-center gap-2 text-lg">
-                  <span className="w-6 shrink-0 text-right font-bold text-white/40">{i + 1}º</span>
-                  <span className="flex-1 truncate font-semibold">{r.nome}</span>
-                  <span className="tabular-nums font-black" style={{ color }}>{fmtNum(r.v, 2)}</span>
-                </div>
-              ))}
-            </div>
-            {c.premio && (
-              <div className="mt-2 truncate text-sm font-bold text-white/60">🎁 {c.premio}</div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function IndicatorsPanel({ totals, totalPts }: { totals: { movel: number; marcacoes: number; energia: number; alarme: number; nc: number }; totalPts: number }) {
 
   const items = [
@@ -428,13 +318,12 @@ function IndicatorsPanel({ totals, totalPts }: { totals: { movel: number; marcac
   return (
     <div className="grid h-full grid-cols-3 grid-rows-2 gap-4 p-6">
       {items.map((it) => (
-        <div key={it.label} className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]"
-          style={{ boxShadow: `inset 0 0 40px color-mix(in oklab, ${it.color} 15%, transparent)` }}>
+        <div key={it.label} className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]">
           <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.3em] text-white/60">
             {it.icon && <NeonIcon label={it.icon} size={20} />}
             {it.label}
           </div>
-          <div className="tabular-nums text-8xl font-black leading-none mt-2" style={{ color: it.color, textShadow: `0 0 28px ${it.color}` }}>
+          <div className="tabular-nums text-8xl font-black leading-none mt-2" style={{ color: it.color }}>
             {it.value}
           </div>
         </div>

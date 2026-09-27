@@ -16,7 +16,7 @@ import {
 import { ShieldAlert, UserPlus, KeyRound, Check, X, Trash2, ShieldCheck, ShieldOff, History, Download, Crown, Megaphone, CalendarClock, Users, UserCog } from "lucide-react";
 import { exportCsv } from "@/lib/export-csv";
 import { BackupPanel } from "@/components/BackupPanel";
-import { AdminAnnouncements, AdminMeetings, AdminEmployees } from "@/components/AdminHub";
+import { AdminAnnouncements, AdminEmployees } from "@/components/AdminHub";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: pageHead("Gestão · PDS LoureShopping", "Gestão central da loja: contas, avisos, reuniões e colaboradores."),
@@ -48,12 +48,11 @@ function AdminPage() {
   const [pwId, setPwId] = useState<string | null>(null);
   const [pwValue, setPwValue] = useState("");
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"contas" | "avisos" | "reunioes" | "colaboradores" | "atividade">("contas");
+  const [tab, setTab] = useState<"contas" | "avisos" | "colaboradores" | "atividade">("contas");
 
   const TABS = [
     { id: "contas" as const, label: "Contas", icon: UserCog },
     { id: "avisos" as const, label: "Avisos", icon: Megaphone },
-    { id: "reunioes" as const, label: "Reuniões", icon: CalendarClock },
     { id: "colaboradores" as const, label: "Colaboradores", icon: Users },
     { id: "atividade" as const, label: "Atividade", icon: History },
   ];
@@ -144,7 +143,6 @@ function AdminPage() {
         </div>
 
         {tab === "avisos" && <AdminAnnouncements />}
-        {tab === "reunioes" && <AdminMeetings />}
         {tab === "colaboradores" && <AdminEmployees />}
         {tab === "atividade" && <ActivityLogSection />}
 
