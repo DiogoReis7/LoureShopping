@@ -749,7 +749,7 @@ function PdsPage() {
                 title="COMBINA — clica para ver as adesões do dia por colaborador"
               >
                 <div
-                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-40 blur-2xl"
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-10 blur-2xl"
                   style={{ background: "linear-gradient(135deg, var(--combina-galp), var(--combina-continente))" }}
                 />
                 <div className="relative flex items-center justify-between gap-3">
@@ -1101,10 +1101,10 @@ function SectionCard({
         onClick={collapsible ? () => setOpen((o) => !o) : undefined}
         onKeyDown={collapsible ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen((o) => !o); } } : undefined}
         className={classNames(
-          "flex items-center justify-between gap-2 px-2.5 py-1 text-white select-none",
+          "flex items-center justify-between gap-2 px-3 py-1.5 text-foreground select-none",
           collapsible && "cursor-pointer",
         )}
-        style={{ background: `linear-gradient(90deg, ${c}, color-mix(in oklab, ${c} 70%, black))` }}
+        style={{ background: `color-mix(in oklab, ${c} 12%, var(--card))`, boxShadow: `inset 3px 0 0 ${c}`, borderBottom: `1px solid color-mix(in oklab, ${c} 25%, transparent)` }}
       >
         <h2 className="section-title-neon text-[10px] font-black uppercase tracking-widest">{title}</h2>
         <div className="flex items-center gap-2">

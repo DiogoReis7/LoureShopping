@@ -298,10 +298,8 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
 
 /* Letreiro néon LoureShopping — usa as cores do tema ativo */
 .pds-neon-word {
-  background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: color-mix(in oklab, var(--foreground) 88%, var(--neon-blue));
+  font-weight: 600 !important;
   /* Mobile first: cabe em ~360 px sem cortar */
   font-size: clamp(1.85rem, 6.8vw, 2.5rem);
   letter-spacing: 0.04em;
@@ -388,21 +386,7 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
 }
 
 /* 5 — Card Combina "estrela" */
-@keyframes combina-star-kf {
-  0%, 100% {
-    box-shadow:
-      0 0 22px color-mix(in oklab, var(--combina-continente) 35%, transparent),
-      0 0 44px color-mix(in oklab, var(--combina-galp) 18%, transparent),
-      inset 0 0 26px color-mix(in oklab, var(--combina-continente) 12%, transparent);
-  }
-  50% {
-    box-shadow:
-      0 0 44px color-mix(in oklab, var(--combina-continente) 60%, transparent),
-      0 0 64px color-mix(in oklab, var(--combina-galp) 32%, transparent),
-      inset 0 0 34px color-mix(in oklab, var(--combina-galp) 22%, transparent);
-  }
-}
-@utility combina-star { animation: combina-star-kf 3.2s ease-in-out infinite; }
+@utility combina-star { box-shadow: none; }
 
 
 
@@ -616,7 +600,7 @@ main > * { animation: page-in-kf 0.3s cubic-bezier(.2,.8,.3,1) both; }
 
 /* 6 — Títulos das secções mais nítidos, mantendo o espaço compacto do PDS */
 .section-title-neon {
-  text-shadow: 0 0 9px color-mix(in oklab, currentColor 45%, transparent);
+  text-shadow: none;
 }
 
 /* 6 — Ícones e botões com brilho no hover */
