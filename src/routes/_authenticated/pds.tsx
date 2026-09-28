@@ -951,7 +951,7 @@ function PdsPage() {
                         className="press focus-neon rounded-md px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
                         style={{
                           background: "linear-gradient(90deg, var(--combina-galp), var(--combina-continente))",
-                          boxShadow: "0 0 12px color-mix(in oklab, var(--combina-continente) 40%, transparent)",
+                          boxShadow: "none",
                         }}
                       >
                         Guardar

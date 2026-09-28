@@ -152,10 +152,10 @@ export function HomeHighlights() {
         ? "var(--neon-yellow)"
         : "var(--neon-pink)";
 
-  const loading = empQ.isLoading || salesQ.isLoading || challengesQ.isLoading;
+  const loading = empQ.isLoading || salesQ.isLoading;
 
   return (
-    <section className="grid gap-3 md:grid-cols-4 stagger">
+    <section className="grid gap-3 md:grid-cols-3 stagger">
       <HighlightCard
         to={topSeller ? `/individual/$slug` : "/desempenho"}
         params={topSeller ? { slug: topSeller.emp.slug } : undefined}
@@ -167,17 +167,6 @@ export function HomeHighlights() {
         valueNumber={topSeller?.pts}
         valueFormatter={(value) => `${fmtNum(value, 2)} pts`}
         loading={loading}
-      />
-
-      <HighlightCard
-        to="/desafios"
-        icon={Target}
-        color="var(--neon-green)"
-        title="Desafios ativos"
-        subtitle={`${challengesQ.data?.length ?? 0} em curso`}
-        value={challengesQ.data && challengesQ.data.length > 0 ? challengesQ.data[0].titulo : "Nenhum"}
-        loading={loading}
-        compactValue
       />
 
       <HighlightCard
@@ -270,7 +259,7 @@ function HighlightCard({
       </div>
       <div className="relative mt-2">
         {loading ? <Skeleton className="h-7 w-24" /> : (
-          <div className={`font-extrabold tabular-nums ${compactValue ? "text-base" : "text-2xl"}`} style={{ color, textShadow: `0 0 10px color-mix(in oklab, ${color} 45%, transparent)` }}>
+          <div className={`font-extrabold tabular-nums ${compactValue ? "text-base" : "text-2xl"}`} style={{ color }}>
             {valueNumber !== undefined ? <AnimatedNumber value={valueNumber} formatter={valueFormatter} /> : value}
           </div>
         )}

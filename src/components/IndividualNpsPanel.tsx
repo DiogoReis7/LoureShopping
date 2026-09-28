@@ -141,7 +141,7 @@ function TipoBlock({ label, color, surveys }: { label: string; color: string; su
         <div className="flex items-center gap-1.5">
           <span
             className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black"
-            style={{ background: color, boxShadow: `0 0 8px color-mix(in oklab, ${color} 55%, transparent)` }}
+            style={{ background: color }}
           >
             {label}
           </span>

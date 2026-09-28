@@ -16,7 +16,6 @@ const PAGES = [
   { to: "/desempenho", label: "Desempenho", icon: Activity },
   { to: "/ociosidade", label: "Ociosidade & Telemarketing", icon: Coffee },
   { to: "/individual", label: "Individuais", icon: UserCircle },
-  { to: "/desafios", label: "Desafios", icon: Trophy },
   { to: "/nps", label: "NPS", icon: HeartHandshake },
   { to: "/pesquisa", label: "Pesquisa", icon: Search },
   { to: "/contador", label: "Contador", icon: Calculator },

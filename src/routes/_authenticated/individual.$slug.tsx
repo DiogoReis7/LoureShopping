@@ -401,7 +401,7 @@ function SectionCard({
       className="overflow-hidden rounded-lg border bg-card shadow-sm"
       style={{
         borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
-        boxShadow: `0 0 0 1px color-mix(in oklab, ${color} 20%, transparent), 0 4px 18px -8px color-mix(in oklab, ${color} 40%, transparent)`,
+        boxShadow: `0 0 0 1px color-mix(in oklab, ${color} 20%, transparent)`,
       }}
     >
       <header
@@ -469,7 +469,7 @@ function ProductTile({
             className="mt-0.5 shrink-0"
             style={{
               width: 14, height: 14, color: neon,
-              filter: `drop-shadow(0 0 4px color-mix(in oklab, ${neon} 70%, transparent))`,
+              filter: "none",
             }}
           />
 
@@ -483,7 +483,7 @@ function ProductTile({
         {active && (
           <span
             className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold text-black tabular-nums"
-            style={{ background: neon, boxShadow: `0 0 8px color-mix(in oklab, ${neon} 60%, transparent)` }}
+            style={{ background: neon }}
           >
             {fmtNum(pond, 1)}
           </span>
@@ -510,7 +510,7 @@ function ProductTile({
         <button
           onClick={onPlus}
           className="grid h-8 w-8 place-items-center rounded-md text-black shrink-0 font-bold active:scale-95 transition-transform"
-          style={{ background: neon, boxShadow: `0 0 10px color-mix(in oklab, ${neon} 55%, transparent)` }}
+          style={{ background: neon }}
           aria-label="Aumentar"
         >
           <Plus className="h-4 w-4" />
@@ -609,7 +609,7 @@ function QuickEntryBar({
                       "w-full flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-left text-[11px] font-semibold transition-all",
                       selected ? "ring-2 ring-offset-1 ring-offset-card" : "hover:bg-accent",
                     )}
-                    style={selected ? { borderColor: color, color, boxShadow: `0 0 8px color-mix(in oklab, ${color} 40%, transparent)` } : undefined}
+                    style={selected ? { borderColor: color, color } : undefined}
                     title={`${p.nome} (clique direito = -1)`}
                   >
                     <QIcon style={{ width: 12, height: 12, color }} />
@@ -642,7 +642,7 @@ function NpsDetractorAlertForEmployee({ employeeId }: { employeeId: string | und
         borderColor: "var(--destructive)",
         background: "color-mix(in oklab, var(--destructive) 12%, transparent)",
         color: "var(--destructive)",
-        boxShadow: "0 0 18px color-mix(in oklab, var(--destructive) 30%, transparent)",
+        boxShadow: "none",
       }}
     >
       <AlertTriangle className="h-4 w-4 shrink-0" />

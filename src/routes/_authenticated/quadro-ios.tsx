@@ -312,7 +312,7 @@ function MetaAlert({ loja, dayIso }: { loja: ReturnType<typeof bucketsForFake>; 
     return (
       <div
         className="rounded-md border border-[color:var(--neon-green)]/60 bg-[color:color-mix(in_oklab,var(--neon-green)_12%,transparent)] px-3 py-2 text-xs font-semibold text-[var(--neon-green)]"
-        style={{ boxShadow: "0 0 16px color-mix(in oklab, var(--neon-green) 30%, transparent)" }}
+        style={{ boxShadow: "none" }}
       >
         ✅ Todas as metas mínimas atingidas — bom trabalho, equipa!
       </div>
@@ -330,7 +330,7 @@ function MetaAlert({ loja, dayIso }: { loja: ReturnType<typeof bucketsForFake>; 
         borderColor: color,
         background: `color-mix(in oklab, ${color} 14%, transparent)`,
         color,
-        boxShadow: `0 0 18px color-mix(in oklab, ${color} 35%, transparent)`,
+        boxShadow: "none",
       }}
     >
       <div className="font-bold uppercase tracking-wider">

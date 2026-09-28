@@ -834,7 +834,7 @@ function NpsPage() {
               borderColor: "var(--destructive)",
               background: "color-mix(in oklab, var(--destructive) 12%, transparent)",
               color: "var(--destructive)",
-              boxShadow: "0 0 18px color-mix(in oklab, var(--destructive) 30%, transparent)",
+              boxShadow: "none",
             }}
           >
             <div className="font-bold uppercase tracking-wider">

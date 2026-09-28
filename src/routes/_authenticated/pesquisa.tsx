@@ -94,7 +94,7 @@ function PesquisaPage() {
                   >
                     <span
                       className="grid h-9 w-9 place-items-center rounded-md transition-transform group-hover:scale-105"
-                      style={{ background: `color-mix(in oklab, ${ic.color} 18%, transparent)`, color: ic.color, boxShadow: `0 0 12px color-mix(in oklab, ${ic.color} 35%, transparent)` }}
+                      style={{ background: `color-mix(in oklab, ${ic.color} 18%, transparent)`, color: ic.color }}
                     >
                       <NeonIcon label={e.categoria ?? e.nome} size={16} />
                     </span>
@@ -120,7 +120,7 @@ function PesquisaPage() {
                   >
                     <span
                       className="grid h-9 w-9 place-items-center rounded-md"
-                      style={{ background: `color-mix(in oklab, ${ic.color} 18%, transparent)`, color: ic.color, boxShadow: `0 0 12px color-mix(in oklab, ${ic.color} 30%, transparent)` }}
+                      style={{ background: `color-mix(in oklab, ${ic.color} 18%, transparent)`, color: ic.color }}
                     >
                       <NeonIcon label={p.categoria ?? p.nome} size={16} />
                     </span>

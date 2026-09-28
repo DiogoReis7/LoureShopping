@@ -176,7 +176,7 @@ function TvPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-[var(--neon-orange,var(--neon-pink))]/60 bg-black/40 px-6 py-2 animate-pulse"
-          style={{ boxShadow: "0 0 24px color-mix(in oklab, var(--neon-pink) 55%, transparent)" }}>
+          style={{ boxShadow: "none" }}>
           <span className="text-3xl">🔥</span>
           <span className="tabular-nums text-4xl font-black" style={{ color: "var(--neon-yellow)", textShadow: "0 0 18px var(--neon-yellow)" }}>
             <AnimatedNumber value={totalPts} formatter={(value) => fmtNum(value, 2)} />
@@ -272,7 +272,7 @@ function Podium({ top3 }: { top3: { e: Employee; pts: number; qty: number }[] })
               height: `${h}%`,
               minHeight: 60,
               background: `linear-gradient(180deg, color-mix(in oklab, ${color} 40%, transparent), color-mix(in oklab, ${color} 8%, transparent))`,
-              boxShadow: `inset 0 4px 20px color-mix(in oklab, ${color} 40%, transparent), 0 0 30px color-mix(in oklab, ${color} 25%, transparent)`,
+              boxShadow: "none",
             }}
           >
             <div className="grid h-full place-items-center">

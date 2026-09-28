@@ -69,7 +69,7 @@ export function pickIcon(label: string | null | undefined): { Icon: LucideIcon; 
 }
 
 
-/** Pequeno ícone neon (drop-shadow) — herda cor da categoria. */
+/** Pequeno ícone de categoria — herda cor da categoria, sem brilho. */
 export function NeonIcon({
   label, code, size = 14, className = "",
 }: { label?: string | null; code?: string | null; size?: number; className?: string }) {
@@ -77,10 +77,7 @@ export function NeonIcon({
   return (
     <Icon
       className={className}
-      style={{
-        width: size, height: size, color,
-        filter: `drop-shadow(0 0 4px color-mix(in oklab, ${color} 70%, transparent))`,
-      }}
+      style={{ width: size, height: size, color }}
       aria-hidden
     />
   );

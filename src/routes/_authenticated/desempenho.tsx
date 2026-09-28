@@ -1310,7 +1310,7 @@ function SectionCard({
     <section className="overflow-hidden rounded-lg border bg-card shadow-sm"
       style={{
         borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
-        boxShadow: `0 0 0 1px color-mix(in oklab, ${color} 20%, transparent), 0 4px 18px -8px color-mix(in oklab, ${color} 40%, transparent)`,
+        boxShadow: `0 0 0 1px color-mix(in oklab, ${color} 20%, transparent)`,
       }}>
       <header className="flex items-center justify-between gap-2 px-2.5 py-1 text-white"
         style={{ background: `linear-gradient(90deg, ${color}, color-mix(in oklab, ${color} 55%, black))` }}>
