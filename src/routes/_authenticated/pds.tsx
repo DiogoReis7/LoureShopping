@@ -48,6 +48,7 @@ type Sale = { employee_id: string; product_id: string; data: string; quantidade:
 // Indicadores do PDS (por código de produto). Móvel e Combina NÃO contam.
 const MARCACOES_CODES = new Set(["sm-1a", "sm-2a", "sm-1a-estrela", "sm-2a-estrela", "sm-1a-movel", "sm-2a-movel", "xpert", "ecn", "premium", "segue-retencao"]);
 const MOVEL_CODES = new Set(["cv", "cv-por-retencao", "pp", "pre-pagos"]);
+const FIXO_CODES = new Set(["tv", "net", "voz", "wifi-total", "migracoes", "migracoes-tv"]);
 // Códigos excluídos do total "Ponderado" / %TEP (alinhado com /desempenho, /desafios e /tv).
 const EXCLUDED_FROM_PTS = new Set(["combina", "nc"]);
 
@@ -173,7 +174,7 @@ function PdsPage() {
 
   // Totais por indicador (por código de produto). Móvel e Combina excluídos.
   const catTotals = useMemo(() => {
-    const m: Record<string, number> = { "NC": 0, "Alarme": 0, "Móvel": 0, "Marcações": 0, "Energia": 0 };
+    const m: Record<string, number> = { "NC": 0, "Alarme": 0, "Móvel": 0, "Marcações": 0, "Energia": 0, "Fixo": 0, "MaisNegocio": 0 };
     for (const s of sales) {
       const p = prodMap.get(s.product_id);
       if (!p) continue;
@@ -185,6 +186,11 @@ function PdsPage() {
       else if (code === "cv" || code === "cv-por-retencao" || code === "pp" || code === "pre-pagos") m["Móvel"] += q;
       else if (MARCACOES_CODES.has(code)) m["Marcações"] += w; // ponderado
       else if (code === "energia" || code === "energia-sa") m["Energia"] += q;
+      else if (FIXO_CODES.has(code)) m["Fixo"] += q;
+      // "+Negócio": tudo o resto que ponderação (exclui combina/nc, já contados acima nas suas categorias)
+      if (!EXCLUDED_FROM_PTS.has(code) && !FIXO_CODES.has(code) && !MOVEL_CODES.has(code) && !MARCACOES_CODES.has(code)) {
+        m["MaisNegocio"] += w;
+      }
     }
     return m;
   }, [sales, prodMap]);
@@ -754,6 +760,38 @@ function PdsPage() {
                   <StatCardCalm label="Alarmes" value={fmtNum(catTotals["Alarme"] ?? 0, 0)} color="var(--destructive)" />
                   <StatCardCalm label="Energia" value={fmtNum(catTotals["Energia"] ?? 0, 0)} color="var(--neon-orange)" />
                 </div>
+
+                {/* Barra segmentada: peso relativo de cada categoria no dia */}
+                {(() => {
+                  const segs = [
+                    { label: "Fixo", value: catTotals["Fixo"] ?? 0, color: "var(--neon-blue)" },
+                    { label: "Móvel", value: catTotals["Móvel"] ?? 0, color: "var(--success)" },
+                    { label: "Marcações", value: catTotals["Marcações"] ?? 0, color: "var(--neon-violet)" },
+                    { label: "Mais Negócio", value: catTotals["MaisNegocio"] ?? 0, color: "var(--neon-yellow)" },
+                  ];
+                  const sum = segs.reduce((a, s) => a + s.value, 0);
+                  return (
+                    <div className="mt-2.5">
+                      <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+                        {segs.map((s) => (
+                          <div
+                            key={s.label}
+                            style={{ width: sum > 0 ? `${(s.value / sum) * 100}%` : "0%", background: s.color }}
+                          />
+                        ))}
+                        {sum === 0 && <div className="w-full bg-muted" />}
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+                        {segs.map((s) => (
+                          <span key={s.label} className="inline-flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.color }} />
+                            {s.label} <b className="tabular-nums text-foreground">{fmtNum(s.value, 2)}</b>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Combina — versão compacta, abre o mesmo diálogo */}
