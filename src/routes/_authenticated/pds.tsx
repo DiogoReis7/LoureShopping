@@ -183,10 +183,10 @@ function PdsPage() {
       const w = q * Number(p.peso ?? 0);
       if (code === "nc") m["NC"] += q;
       else if (code === "alarmes" || code === "alarme") m["Alarme"] += q;
-      else if (code === "cv" || code === "cv-por-retencao" || code === "pp" || code === "pre-pagos") m["Móvel"] += q;
+      else if (code === "cv" || code === "cv-por-retencao" || code === "pp" || code === "pre-pagos") m["Móvel"] += w;
       else if (MARCACOES_CODES.has(code)) m["Marcações"] += w; // ponderado
       else if (code === "energia" || code === "energia-sa") m["Energia"] += q;
-      else if (FIXO_CODES.has(code)) m["Fixo"] += q;
+      else if (FIXO_CODES.has(code)) m["Fixo"] += w;
       // "+Negócio": tudo o resto que ponderação (exclui combina/nc, já contados acima nas suas categorias)
       if (!EXCLUDED_FROM_PTS.has(code) && !FIXO_CODES.has(code) && !MOVEL_CODES.has(code) && !MARCACOES_CODES.has(code)) {
         m["MaisNegocio"] += w;
