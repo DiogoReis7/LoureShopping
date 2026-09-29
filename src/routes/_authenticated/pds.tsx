@@ -495,6 +495,9 @@ function PdsPage() {
 
   // ---- Fim do dia: resumo pronto a colar no WhatsApp ----
   const dayLabel = `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+  const pdsWeekday = new Date(year, month - 1, day)
+    .toLocaleDateString("pt-PT", { weekday: "long" })
+    .toUpperCase();
   const topRows = useMemo(() => empRows.filter((r) => r.pts > 0 || r.qty > 0), [empRows]);
   const best = topRows[0] ?? null;
 
@@ -724,125 +727,70 @@ function PdsPage() {
           {/* Em PC e durante a captura: grelha 3 colunas. Em mobile: lista vertical. */}
           <div className="pds-grid">
 
-            {/* --- Coluna 1: LOURESHOPPING + Global + Indicadores --- */}
-            <div className="flex flex-col gap-2 min-h-0">
-              {/* Letreiro néon LOURESHOPPING — palco, reflexo e brilho pulsante */}
-              <div
-                className="pds-brand min-h-[132px] sm:min-h-[172px] lg:min-h-[210px] overflow-hidden rounded-md border border-primary/40 bg-black/40 flex flex-col items-center justify-center"
-                style={{ boxShadow: "inset 0 0 24px color-mix(in oklab, var(--neon-blue) 10%, transparent)" }}
-                aria-label="LoureShopping"
-              >
-                <span className="pds-neon-word select-none px-2 text-center font-black uppercase leading-none">
-                  LOURESHOPPING
-                </span>
+            {/* --- Coluna 1: cabeçalho + atividade + serviço --- */}
+            <div className="flex flex-col gap-2.5 min-h-0">
+              {/* Cabeçalho: nome da loja + data, simples */}
+              <div className="rounded-md border bg-card px-3.5 py-3">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <div className="pds-neon-word select-none font-extrabold uppercase leading-none">
+                    LOURESHOPPING
+                  </div>
+                  <div className="text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {pdsWeekday}
+                    <div className="text-xs font-bold text-foreground">{dayLabel}</div>
+                  </div>
+                </div>
+                <div className="mt-2 h-[3px] w-full rounded-full" style={{ background: "linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow))", opacity: 0.55 }} />
               </div>
 
-              {/* Card destaque COMBINA — estrela do PDS (NOS + Galp + Continente) */}
+              {/* Atividade: 4 números-chave, calmos */}
+              <div>
+                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                  <span>⚡</span> Atividade
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <StatCardCalm label="Pontos" value={fmtNum(totalPtsDay, 2)} color="var(--neon-blue)" />
+                  <StatCardCalm label="Novos" value={fmtNum(catTotals["NC"] ?? 0, 0)} color="var(--success)" />
+                  <StatCardCalm label="Alarmes" value={fmtNum(catTotals["Alarme"] ?? 0, 0)} color="var(--destructive)" />
+                  <StatCardCalm label="Energia" value={fmtNum(catTotals["Energia"] ?? 0, 0)} color="var(--neon-orange)" />
+                </div>
+              </div>
+
+              {/* Combina — versão compacta, abre o mesmo diálogo */}
               <button
                 type="button"
                 onClick={() => { setCombinaOpen(true); haptic("tap"); }}
-                className="combina-star press relative w-full cursor-pointer overflow-hidden rounded-xl border-2 p-3.5 text-left transition"
-                style={{
-                  borderColor: "color-mix(in oklab, var(--combina-continente) 35%, transparent)",
-                  background: "linear-gradient(135deg, color-mix(in oklab, var(--combina-continente) 5%, transparent) 0%, color-mix(in oklab, var(--combina-galp) 4%, transparent) 50%, color-mix(in oklab, var(--combina-nos) 6%, transparent) 100%), var(--card)",
-                }}
-                title="COMBINA — clica para ver as adesões do dia por colaborador"
+                className="press flex items-center gap-3 rounded-md border px-3 py-2 text-left transition hover:bg-muted/40"
               >
-                <div
-                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-10 blur-2xl"
-                  style={{ background: "linear-gradient(135deg, var(--combina-galp), var(--combina-continente))" }}
-                />
-                <div className="relative flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span
-                      className="grid h-12 w-12 shrink-0 place-items-center rounded-xl"
-                      style={{
-                        background: "linear-gradient(135deg, var(--combina-continente), var(--combina-galp))",
-                        color: "#fff",
-                      }}
-                    >
-                      <ShoppingCart className="h-6 w-6" />
-                    </span>
-                    <div className="min-w-0">
-                      <div
-                        className="text-lg font-black uppercase tracking-[0.18em]"
-                        style={{ color: "var(--combina-continente)" }}
-                      >
-                        Combina
-                      </div>
-                      {/* Marcas separadas visualmente, cada uma com a cor oficial */}
-                      <div className="mt-1 flex items-stretch overflow-hidden rounded-md border border-border/60 text-[9px] font-black uppercase tracking-wide">
-                        {([
-                          // NOS: a marca é carvão/preto — sobre o card escuro usamos texto claro
-                          { nome: "NOS", cor: "#ffffff", bg: "var(--combina-nos)", border: "transparent" },
-                          { nome: "Galp", cor: "#ffffff", bg: "var(--combina-galp)", border: "transparent" },
-                          { nome: "Continente", cor: "#ffffff", bg: "var(--combina-continente)", border: "transparent" },
-                        ] as const).map((b) => (
-                          <span
-                            key={b.nome}
-                            className="border-l border-black/40 px-2 py-1 first:border-l-0"
-                            style={{
-                              color: b.cor,
-                              background: b.bg,
-                              boxShadow: `inset 0 0 0 1px ${b.border}`,
-                              textShadow: "0 1px 2px rgba(0,0,0,0.55)",
-                            }}
-                          >
-                            {b.nome}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Contador de adesões bem destacado */}
-                  <div className="shrink-0 text-center">
-                    <div
-                      className={classNames("grid h-16 w-16 place-items-center rounded-full sm:h-[4.5rem] sm:w-[4.5rem]", combinaPop && "combina-pop")}
-                      style={{
-                        background: "radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--combina-continente) 35%, transparent), color-mix(in oklab, var(--combina-galp) 10%, transparent) 70%)",
-                        border: "2px solid color-mix(in oklab, var(--combina-continente) 55%, transparent)",
-                      }}
-                    >
-                      <span className="kpi-neon text-3xl tabular-nums sm:text-4xl" style={{ color: "var(--combina-continente)" }}>
-                        <AnimatedNumber value={combinaTotal} formatter={(v) => fmtNum(v, 0)} />
-                      </span>
-                    </div>
-                    <div className="mt-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">adesões hoje</div>
-                  </div>
+                <span
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white"
+                  style={{ background: "linear-gradient(135deg, var(--combina-continente), var(--combina-galp))" }}
+                >
+                  <ShoppingCart className="h-4.5 w-4.5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--combina-continente)" }}>Combina</div>
+                  <div className="truncate text-[10px] text-muted-foreground">NOS + Galp + Continente · toca para ver/registar</div>
                 </div>
-                <div className="relative mt-2 flex items-center gap-1 text-[10px] leading-snug text-muted-foreground">
-                  <Sparkles className="h-3 w-3 shrink-0" style={{ color: "var(--combina-galp)" }} />
-                  <span>
-                    Cliente poupa <b className="text-foreground">até 600€/ano</b> · até <b className="text-foreground">10% extra</b> no Continente · até <b className="text-foreground">30 cênt/l</b> na Galp
-                  </span>
+                <div className="shrink-0 text-right">
+                  <div className="text-xl font-extrabold tabular-nums" style={{ color: "var(--combina-continente)" }}>
+                    <AnimatedNumber value={combinaTotal} formatter={(v) => fmtNum(v, 0)} />
+                  </div>
+                  <div className="text-[9px] uppercase text-muted-foreground">hoje</div>
                 </div>
               </button>
 
-
-              <div className="neon-divider" aria-hidden />
-
-
-              <SectionCard title="Global" accent="orange" right={`${tDay.length} senhas`}>
-                <div className="cap-grid-6 grid grid-cols-3 gap-px bg-border md:grid-cols-6">
-                  <Metric label="Atend." value={fmtNum(totDay.atendidos, 2)} tone="success" />
-                  <Metric label="Canc." value={fmtNum(totDay.cancelados, 2)} tone="danger" />
-                  <Metric label="%TD" value={`${totDay.pct.toFixed(1)}%`} />
-                  <Metric label="%TEP" value={`${totDay.atendidos > 0 ? ((totalPtsDay / totDay.atendidos) * 100).toFixed(0) : 0}%`} tone="success" />
-                  <Metric label="TME" value={fmtSecsAsTime(totDay.tme)} />
-                  <Metric label="TMA" value={fmtSecsAsTime(totDay.tma)} />
+              {/* Serviço: indicadores de atendimento, discretos */}
+              <div className="rounded-md border bg-muted/20 px-3 py-2">
+                <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Serviço</div>
+                <div className="grid grid-cols-3 gap-y-1.5 text-[11px] sm:grid-cols-5">
+                  <div>TME <b className="tabular-nums text-foreground">{fmtSecsAsTime(totDay.tme)}</b></div>
+                  <div>TMA <b className="tabular-nums text-foreground">{fmtSecsAsTime(totDay.tma)}</b></div>
+                  <div>%TD <b className="tabular-nums text-foreground">{totDay.pct.toFixed(0)}%</b></div>
+                  <div>Atend. <b className="tabular-nums" style={{ color: "var(--success)" }}>{fmtNum(totDay.atendidos, 0)}</b></div>
+                  <div>Senhas <b className="tabular-nums text-foreground">{tDay.length}</b></div>
                 </div>
-              </SectionCard>
-
-              <SectionCard title="Indicadores" accent="orange" right={`${fmtNum(totalPtsDay, 2)} pts`}>
-                <div className="cap-grid-6 grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-6">
-                  <Metric label="GLOBAL" value={fmtNum(totalPtsDay, 2)} big tone="success" />
-                  <Metric label="NC's" icon="NC" value={fmtNum(catTotals["NC"] ?? 0, 2)} big />
-                  <Metric label="Alarme" icon="Alarme" value={fmtNum(catTotals["Alarme"] ?? 0, 2)} big />
-                  <Metric label="Móvel" icon="Móvel" value={fmtNum(catTotals["Móvel"] ?? 0, 2)} big />
-                  <Metric label="Marcações" icon="Marcações" value={fmtNum(catTotals["Marcações"] ?? 0, 2)} big />
-                  <Metric label="Energia" icon="Energia" value={fmtNum(catTotals["Energia"] ?? 0, 2)} big />
-                </div>
-              </SectionCard>
+              </div>
 
 
               {/* Painel COMBINA: adesões do dia por colaborador e horário */}
@@ -963,43 +911,79 @@ function PdsPage() {
             </div>
 
 
-            {/* --- Vendedores (por baixo dos totais) --- */}
+            {/* --- Vendedores: tabela de ranking, simples --- */}
             <SectionCard
-              title="Vendedores"
+              title="Ranking"
               accent="blue"
               right={shiftsToday.length === 0 ? `${empRows.length} (sem Sisqual)` : `${empRows.length}`}
             >
-              <MiniPodium top3={empRows.slice(0, 3)} />
-
-              <div className="cap-grid-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 p-2">
-                {empRows.map((r, i) => (
-                  <EmpRow
-                    key={r.e.id}
-                    rank={r.pts > 0 ? i : -1}
-                    maxPts={empRows[0]?.pts ?? 0}
-                    series={weekSeries.get(r.e.id) ?? []}
-                    focusState={focusId == null ? "none" : focusId === r.e.id ? "on" : "off"}
-                    onFocusToggle={() => { haptic("tap"); setFocusId((v) => (v === r.e.id ? null : r.e.id)); }}
-                    {...r}
-                  />
-                ))}
-
-                {empRows.length === 0 && (
-                  <div className="vendor-empty md:col-span-2 xl:col-span-3">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted text-[var(--neon-blue)]">
-                      <ShoppingCart className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-foreground">Sem vendedores para mostrar</div>
-                      <div className="text-[10px] text-muted-foreground">
-                        {shiftsToday.length === 0
-                          ? "Ainda não existem colaboradores ativos."
-                          : "Ninguém está escalado para hoje na Sisqual."}
-                      </div>
+              {empRows.length === 0 ? (
+                <div className="vendor-empty">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted text-[var(--neon-blue)]">
+                    <ShoppingCart className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-foreground">Sem vendedores para mostrar</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {shiftsToday.length === 0
+                        ? "Ainda não existem colaboradores ativos."
+                        : "Ninguém está escalado para hoje na Sisqual."}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] text-xs md:text-sm">
+                    <thead>
+                      <tr className="border-b text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <th className="px-2.5 py-2 text-left font-semibold">Vendedor</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Pts</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">TV</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Móvel</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Alarme</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Energia</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Atd.</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">TMA</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Efic.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {empRows.map((r, i) => {
+                        const medal = r.pts > 0 ? ["🥇", "🥈", "🥉"][i] : null;
+                        const effColor = r.tep >= 45 ? "var(--success)" : r.tep >= 25 ? "var(--neon-yellow)" : "var(--destructive)";
+                        return (
+                          <tr
+                            key={r.e.id}
+                            onClick={() => { haptic("tap"); setFocusId((v) => (v === r.e.id ? null : r.e.id)); }}
+                            className={classNames(
+                              "cursor-pointer border-b last:border-0 transition-colors hover:bg-muted/40",
+                              focusId === r.e.id && "bg-muted/60",
+                            )}
+                          >
+                            <td className="px-2.5 py-2 font-semibold text-foreground">
+                              {medal && <span className="mr-1.5">{medal}</span>}
+                              {r.e.nome}
+                            </td>
+                            <td className="px-2.5 py-2 text-right font-bold tabular-nums" style={{ color: "var(--neon-blue)" }}>{fmtNum(r.pts, 2)}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.tvs}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.movel}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.alarmes}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.energia}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.atendidos}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{fmtSecsAsTime(r.tma)}</td>
+                            <td className="px-2.5 py-2 text-right">
+                              <span className="inline-flex items-center gap-1.5 font-bold tabular-nums" style={{ color: effColor }}>
+                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: effColor }} />
+                                {r.tep.toFixed(0)}%
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </SectionCard>
           </div>
         </div>
@@ -1119,6 +1103,16 @@ function SectionCard({
   );
 }
 
+
+/** Cartão de estatística calmo — usado na linha "Atividade" do PDS. */
+function StatCardCalm({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div className="rounded-md border bg-card px-3 py-2.5" style={{ borderLeft: `3px solid ${color}` }}>
+      <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-xl font-extrabold tabular-nums" style={{ color }}>{value}</div>
+    </div>
+  );
+}
 
 function Metric({
   label, value, tone, big, icon,
