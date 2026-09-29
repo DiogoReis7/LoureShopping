@@ -772,14 +772,19 @@ function PdsPage() {
                   const sum = segs.reduce((a, s) => a + s.value, 0);
                   return (
                     <div className="mt-2.5">
-                      <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+                      <div className="flex h-3 w-full gap-1">
                         {segs.map((s) => (
                           <div
                             key={s.label}
-                            style={{ width: sum > 0 ? `${(s.value / sum) * 100}%` : "0%", background: s.color }}
+                            className="h-full min-w-[6px] rounded-full"
+                            style={{
+                              flexGrow: sum > 0 ? Math.max(s.value, sum * 0.015) : 1,
+                              flexBasis: 0,
+                              background: s.value > 0 ? s.color : "var(--muted)",
+                              opacity: s.value > 0 ? 1 : 0.4,
+                            }}
                           />
                         ))}
-                        {sum === 0 && <div className="w-full bg-muted" />}
                       </div>
                       <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
                         {segs.map((s) => (
