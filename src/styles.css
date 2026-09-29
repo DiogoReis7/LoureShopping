@@ -299,10 +299,9 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
 /* Letreiro néon LoureShopping — usa as cores do tema ativo */
 .pds-neon-word {
   color: color-mix(in oklab, var(--foreground) 88%, var(--neon-blue));
-  font-weight: 600 !important;
-  /* Mobile first: cabe em ~360 px sem cortar */
-  font-size: clamp(1.85rem, 6.8vw, 2.5rem);
-  letter-spacing: 0.04em;
+  font-weight: 700 !important;
+  font-size: clamp(1.35rem, 4.2vw, 1.9rem);
+  letter-spacing: 0.03em;
 }
 @media (min-width: 640px) {
   .pds-neon-word {
@@ -321,8 +320,8 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
    queries usam a largura do ECRÃ — em mobile as letras saíam pequenas.
    Forçamos aqui o tamanho grande igual ao de PC. */
 .pds-frame[data-capture="true"] .pds-neon-word {
-  font-size: 4.6rem;
-  letter-spacing: 0.14em;
+  font-size: 2.4rem;
+  letter-spacing: 0.05em;
 }
 .pds-frame[data-capture="true"] .cap-grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
 .pds-frame[data-capture="true"] .cap-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
