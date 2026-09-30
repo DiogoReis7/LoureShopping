@@ -18,15 +18,46 @@
   .pds-scroll {
     overflow-x: hidden;
     overflow-y: visible;
+    padding: 0.25rem 0.35rem 0.75rem !important;
+  }
+
+  .pds-frame {
+    padding: 0.35rem;
   }
 
   .pds-grid {
-    gap: 0.35rem;
+    gap: 0.25rem;
   }
 
   .pds-neon-word {
-    font-size: clamp(1.35rem, 8vw, 2.2rem);
+    font-size: clamp(1.25rem, 7vw, 2.1rem);
     letter-spacing: 0.06em;
+  }
+
+  .pds-frame [class*="rounded-md"],
+  .pds-frame [class*="rounded-lg"] {
+    border-radius: 0.5rem;
+  }
+
+  .pds-frame .px-3\.5,
+  .pds-frame .px-3,
+  .pds-frame .py-3,
+  .pds-frame .py-2,
+  .pds-frame .p-2,
+  .pds-frame .p-3 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .pds-frame .text-xl,
+  .pds-frame .text-\[1\.5rem\] {
+    font-size: 1rem !important;
+  }
+
+  .pds-frame .text-\[10px\],
+  .pds-frame .text-\[11px\],
+  .pds-frame .text-\[9px\] {
+    font-size: 0.64rem !important;
   }
 }
 
