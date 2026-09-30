@@ -1,133 +1,137 @@
-/* PDS — vista única em coluna: totais no topo, vendedores por baixo.
-   • Desktop (≥1024px): layout fixo 1280px de largura para print/cópia.
-   • Mobile/tablet: encaixa ao ecrã, sem scroll lateral da página, mantendo
-     o export/cópia em 1280px quando necessário.
-*/
-.pds-frame {
-  width: 100%;
-  max-width: 1280px;
-  margin-inline: auto;
-}
-.pds-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
 
-@media (max-width: 767px) {
-  .pds-scroll {
-    overflow-x: hidden;
-    overflow-y: visible;
-    padding: 0.25rem 0.35rem 0.75rem !important;
-  }
+@custom-variant dark (&:is(.dark *));
 
-  .pds-frame {
-    padding: 0.35rem;
-  }
-
-  .pds-grid {
-    gap: 0.25rem;
-  }
-
-  .pds-neon-word {
-    font-size: clamp(1.25rem, 7vw, 2.1rem);
-    letter-spacing: 0.06em;
-  }
-
-  .pds-frame [class*="rounded-md"],
-  .pds-frame [class*="rounded-lg"] {
-    border-radius: 0.5rem;
-  }
-
-  .pds-frame .px-3\.5,
-  .pds-frame .px-3,
-  .pds-frame .py-3,
-  .pds-frame .py-2,
-  .pds-frame .p-2,
-  .pds-frame .p-3 {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-  }
-
-  .pds-frame .text-xl,
-  .pds-frame .text-\[1\.5rem\] {
-    font-size: 1rem !important;
-  }
-
-  .pds-frame .text-\[10px\],
-  .pds-frame .text-\[11px\],
-  .pds-frame .text-\[9px\] {
-    font-size: 0.64rem !important;
-  }
+@theme inline {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
 }
 
-@media (min-width: 1024px) {
-  .pds-frame {
-    width: 1280px;
-    min-height: 720px;
-    margin-inline: auto;
-  }
-  .pds-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+:root {
+  --radius: .7rem;
+  --neon-green: #5eead4;
+  --neon-yellow: #fbbf24;
+  --neon-pink: #f472b6;
+  --neon-blue: #38bdf8;
+  --neon-orange: #fb923c;
+  --neon-red: #fb7185;
+  --neon-violet: #a5b4fc;
+  --combina-nos: #1d1d1b;
+  --combina-galp: #f47920;
+  --combina-continente: #e3000f;
+  --brand-orange: var(--neon-orange);
+  --brand-blue: var(--neon-blue);
+  --background: oklch(.14 .02 265);
+  --foreground: oklch(.98 .005 250);
+  --card: oklch(.19 .025 265);
+  --card-foreground: oklch(.98 .005 250);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(.74 .12 210);
+  --primary-foreground: oklch(.12 .03 265);
+  --secondary: oklch(.24 .03 265);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(.22 .025 265);
+  --muted-foreground: oklch(.72 .02 250);
+  --accent: oklch(.26 .04 305);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(.64 .16 20);
+  --success: oklch(.78 .14 152);
+  --warning: oklch(.82 .12 90);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(.74 .12 210);
+  --sidebar: oklch(.12 .02 265);
+  --sidebar-foreground: var(--foreground);
 }
 
-/* Durante a captura forçamos o layout de coluna mesmo em mobile,
-   para que Copiar/Print gerem sempre a imagem 1280px de largura igual ao PC. */
-.pds-frame[data-capture="true"] {
-  width: 1280px !important;
-  min-height: 720px;
-  margin-inline: auto;
-}
-.pds-frame[data-capture="true"] .pds-grid {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0.75rem !important;
-}
+.dark { color-scheme: dark; }
 
-/* Letreiro néon LoureShopping — usa as cores do tema ativo */
-.pds-neon-word {
-  color: color-mix(in oklab, var(--foreground) 88%, var(--neon-blue));
-  font-weight: 700 !important;
-  font-size: clamp(1.35rem, 4.2vw, 1.9rem);
-  letter-spacing: 0.03em;
-}
-@media (min-width: 640px) {
-  .pds-neon-word {
-    font-size: clamp(2.5rem, 6vw, 3.6rem);
-    letter-spacing: 0.1em;
+@layer base {
+  * { border-color: var(--border); }
+  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(800px 500px at 100% -100px, color-mix(in oklab, var(--neon-blue) 5%, transparent), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, color-mix(in oklab, var(--neon-pink) 4%, transparent), transparent 60%);
+    background-attachment: fixed;
   }
-}
-@media (min-width: 1024px) {
-  .pds-neon-word {
-    font-size: clamp(3.4rem, 6.2vw, 5rem);
-    letter-spacing: 0.16em;
-  }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.015em; }
+  table, .tabular { font-variant-numeric: tabular-nums; }
+  * { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--ring) 40%, transparent) transparent; }
 }
 
-/* Durante a captura (Copiar/Print) o quadro tem 1280px fixos, mas as media
-   queries usam a largura do ECRÃ — em mobile as letras saíam pequenas.
-   Forçamos aqui o tamanho grande igual ao de PC. */
-.pds-frame[data-capture="true"] .pds-neon-word {
-  font-size: 2.4rem;
-  letter-spacing: 0.05em;
+.glass-card {
+  background: color-mix(in oklab, var(--card) 62%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--foreground) 8%, transparent) inset, 0 12px 32px -18px rgb(0 0 0 / .8);
 }
-.pds-frame[data-capture="true"] .cap-grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
-.pds-frame[data-capture="true"] .cap-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-.pds-frame[data-capture="true"] .cap-label-full { display: inline !important; }
-.pds-frame[data-capture="true"] .cap-label-short { display: none !important; }
-/* Congela o gradiente animado para a cor ser sempre igual na imagem */
-.pds-frame[data-capture="true"] .pds-neon-word {
-  animation: none !important;
-  background-position: 0 0 !important;
-}
-.pds-frame[data-capture="true"] .pds-brand {
-  min-height: 210px;
-}
+.section-title-neon { text-shadow: none; }
+.focus-neon:focus-visible { outline: 3px solid color-mix(in oklab, var(--ring) 85%, transparent); outline-offset: 2px; }
+.press { transition: transform .14s ease, box-shadow .18s ease, opacity .14s ease; }
+.press:active { transform: scale(.97); }
+.lift { transition: transform .18s ease, box-shadow .18s ease; }
+.lift:hover { transform: translateY(-3px); }
+.kpi-neon { font-variant-numeric: tabular-nums; font-weight: 900; letter-spacing: -.02em; }
+.vendor-empty { display:flex; min-height:4.5rem; align-items:center; justify-content:center; gap:.65rem; padding:1rem; border:1px dashed color-mix(in oklab,var(--neon-blue) 28%,var(--border)); border-radius:.5rem; background:color-mix(in oklab,var(--neon-blue) 5%,transparent); }
+.avatar-grad { color:#fff; border:2px solid rgb(255 255 255 / .22); box-shadow:0 0 16px rgb(0 0 0 / .35); text-shadow:0 1px 2px rgb(0 0 0 / .5); }
+.vendor-mini { min-width:0; }
+.skeleton-neon { border-radius:.5rem; background:color-mix(in oklab,var(--card) 80%,transparent); }
 
-/* O quadro do PDS tem largura fixa (1280px) em PC; confinamos o scroll horizontal
-   a este contentor para a página nunca ganhar scroll lateral global. */
-.pds-scroll { overflow-x: auto; overflow-y: visible; }
-.pds-rotate-hint { display: none; }
+/* PDS: o ecrã adapta-se; o snapshot mantém o formato original horizontal. */
+.pds-frame { width:100%; max-width:1280px; margin-inline:auto; position:relative; isolation:isolate; }
+.pds-grid { display:flex; flex-direction:column; gap:.5rem; }
+.pds-scroll { overflow-x:auto; overflow-y:visible; }
+.pds-rotate-hint { display:none; }
+.pds-neon-word { color:color-mix(in oklab,var(--foreground) 88%,var(--neon-blue)); font-weight:700!important; font-size:clamp(1.35rem,4.2vw,1.9rem); letter-spacing:.03em; }
+
+@media (max-width:767px) {
+  .pds-scroll { overflow-x:hidden; padding:.25rem .35rem .75rem!important; }
+  .pds-frame { padding:.35rem; }
+  .pds-grid { gap:.25rem; }
+  .pds-neon-word { font-size:clamp(1.25rem,7vw,2.1rem); letter-spacing:.06em; }
+  .pds-frame [class*="rounded-md"], .pds-frame [class*="rounded-lg"] { border-radius:.5rem; }
+  .pds-frame .text-xl, .pds-frame .text-\[1\.5rem\] { font-size:1rem!important; }
+}
+@media (min-width:640px) { .pds-neon-word { font-size:clamp(2.5rem,6vw,3.6rem); letter-spacing:.1em; } }
+@media (min-width:1024px) {
+  .pds-frame { width:1280px; min-height:720px; }
+  .pds-grid { gap:.75rem; }
+  .pds-neon-word { font-size:clamp(3.4rem,6.2vw,5rem); letter-spacing:.16em; }
+}
+.pds-frame[data-capture="true"] { width:1280px!important; min-height:720px; margin-inline:auto; }
+.pds-frame[data-capture="true"] .pds-grid { display:flex!important; flex-direction:column!important; gap:.75rem!important; }
+.pds-frame[data-capture="true"] .pds-neon-word { font-size:2.4rem; letter-spacing:.05em; animation:none!important; }
+.pds-frame[data-capture="true"] .cap-label-full { display:inline!important; }
+.pds-frame[data-capture="true"] .cap-label-short { display:none!important; }
+
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after { animation-duration:.001ms!important; transition-duration:.001ms!important; }
+}
