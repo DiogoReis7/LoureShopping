@@ -896,9 +896,9 @@ function PdsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-auto" style={{ maxHeight: "min(48vh, 420px)" }}>
                   <table className="w-full min-w-[560px] text-xs md:text-sm">
-                    <thead>
+                    <thead className="sticky top-0 z-10 bg-card">
                       <tr className="border-b text-[10px] uppercase tracking-wide text-muted-foreground">
                         <th className="px-2.5 py-2 text-left font-semibold">Vendedor</th>
                         <th className="px-2.5 py-2 text-right font-semibold">Pts</th>
