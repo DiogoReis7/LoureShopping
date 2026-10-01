@@ -766,7 +766,7 @@ function PdsPage() {
 
               <Dialog open={combinaOpen} onOpenChange={setCombinaOpen}>
                 <DialogContent
-                  className="max-w-md bg-[#0b0f1c]/95"
+                  className="max-w-md bg-card"
                   style={{ borderColor: "color-mix(in oklab, var(--combina-continente) 45%, transparent)" }}
                 >
                   <DialogHeader>
@@ -792,7 +792,7 @@ function PdsPage() {
                       return (
                         <div
                           key={emp}
-                          className="rounded-lg border bg-black/30 p-2"
+                          className="rounded-lg border bg-muted/40 p-2"
                           style={{ borderColor: "color-mix(in oklab, var(--combina-galp) 30%, transparent)" }}
                         >
                           <div className="flex items-center justify-between gap-2">
@@ -829,7 +829,7 @@ function PdsPage() {
                   </div>
 
                   <div
-                    className="mt-3 rounded-lg border bg-black/30 p-2.5"
+                    className="mt-3 rounded-lg border bg-muted/40 p-2.5"
                     style={{ borderColor: "color-mix(in oklab, var(--combina-continente) 35%, transparent)" }}
                   >
                     <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--combina-continente)" }}>
