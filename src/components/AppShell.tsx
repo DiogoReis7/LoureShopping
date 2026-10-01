@@ -39,12 +39,9 @@ const PRIMARY: NavItem[] = [
 const MAIS: NavItem[] = [
   { to: "/contador", label: "Contador", icon: Calculator },
   { to: "/sgf", label: "SGF", icon: Ticket },
-  { to: "/ociosidade", label: "Ociosidade", icon: Coffee },
   { to: "/quadro-ios", label: "Quadro IOS", icon: ClipboardList },
   { to: "/colaboradores", label: "Vendedores", icon: Users },
   { to: "/horarios", label: "Horários", icon: CalendarClock },
-  { to: "/ausencias", label: "Ausências", icon: CalendarOff },
-  { to: "/desempenho", label: "Desempenho", icon: Activity },
   { to: "/nps", label: "NPS", icon: HeartHandshake },
   { to: "/produtos", label: "Produtos", icon: Package },
   { to: "/pesquisa", label: "Pesquisa", icon: Search },

@@ -13,8 +13,6 @@ import {
 const PAGES = [
   { to: "/", label: "Início", icon: Home },
   { to: "/pds", label: "PDS", icon: BarChart3 },
-  { to: "/desempenho", label: "Desempenho", icon: Activity },
-  { to: "/ociosidade", label: "Ociosidade & Telemarketing", icon: Coffee },
   { to: "/individual", label: "Individuais", icon: UserCircle },
   { to: "/nps", label: "NPS", icon: HeartHandshake },
   { to: "/pesquisa", label: "Pesquisa", icon: Search },

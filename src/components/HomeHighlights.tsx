@@ -157,7 +157,7 @@ export function HomeHighlights() {
   return (
     <section className="grid gap-3 md:grid-cols-3 stagger">
       <HighlightCard
-        to={topSeller ? `/individual/$slug` : "/desempenho"}
+        to={topSeller ? `/individual/$slug` : "/pds"}
         params={topSeller ? { slug: topSeller.emp.slug } : undefined}
         icon={Crown}
         color="var(--neon-yellow)"
@@ -170,7 +170,7 @@ export function HomeHighlights() {
       />
 
       <HighlightCard
-        to="/desempenho"
+        to="/pds"
         icon={Flame}
         color="var(--neon-orange)"
         title="Loja este mês"
