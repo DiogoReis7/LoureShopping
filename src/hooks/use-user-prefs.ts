@@ -28,7 +28,7 @@ export type UserPrefs = {
 };
 
 const DEFAULTS: UserPrefs = {
-  pinnedShortcuts: ["/pds", "/individual", "/desempenho", "/nps"],
+  pinnedShortcuts: ["/pds", "/individual", "/nps"],
   weekBlocks: ["pts", "tma", "idle", "det"],
   weekTopN: 3,
   weekShowBottom: true,
