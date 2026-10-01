@@ -33,9 +33,6 @@ export const Route = createFileRoute("/_authenticated/")({
 
 const ALL_ITEMS: { to: string; label: string; desc: string; icon: typeof BarChart3; color: string; group: string; adminOnly?: boolean }[] = [
   { to: "/pds", label: "PDS", desc: "Ponto de situação", icon: BarChart3, color: "var(--neon-blue)", group: "Vendas" },
-  { to: "/desempenho", label: "Desempenho", desc: "Vendas, senhas e TEPs", icon: TrendingUp, color: "var(--neon-green)", group: "Vendas" },
-  { to: "/ociosidade", label: "Ociosidade", desc: "Tempo morto e telemarketing", icon: Coffee, color: "var(--neon-yellow)", group: "Vendas" },
-  
   { to: "/individual", label: "Individuais", desc: "Vendas por vendedor", icon: UserCircle, color: "var(--neon-blue)", group: "Vendas" },
   { to: "/contador", label: "Contador", desc: "Senhas e tráfego", icon: Calculator, color: "var(--neon-green)", group: "Atendimento" },
   { to: "/sgf", label: "SGF", desc: "Tickets do dia", icon: Ticket, color: "var(--neon-violet)", group: "Atendimento" },
@@ -48,7 +45,6 @@ const ALL_ITEMS: { to: string; label: string; desc: string; icon: typeof BarChar
   { to: "/tv", label: "Modo TV", desc: "Ranking em ecrã inteiro", icon: Monitor, color: "var(--neon-violet)", group: "Qualidade & Gestão" },
   { to: "/admin", label: "Contas", desc: "Acessos da equipa", icon: ShieldCheck, color: "var(--neon-blue)", group: "Qualidade & Gestão", adminOnly: true },
   { to: "/avisos", label: "Avisos", desc: "Quadro de comunicados", icon: Megaphone, color: "var(--neon-pink)", group: "Loja & Equipa" },
-  { to: "/ausencias", label: "Ausências", desc: "Faltas e justificações", icon: CalendarOff, color: "var(--neon-orange)", group: "Loja & Equipa" },
 ];
 
 const GROUPS = ["Vendas", "Atendimento", "Qualidade & Gestão", "Loja & Equipa"];

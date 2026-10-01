@@ -374,7 +374,7 @@ function NpsPage() {
   }, [scores, empId]);
 
   // Visão individual: filtra scores para o colaborador selecionado
-  const selectedEmp = empId ? employees.find((e) => e.id === empId) ?? null : null;
+  const selectedEmp = null;
   const visibleScores = useMemo(
     () => (selectedEmp ? scores.filter((s) => s.employee_id === selectedEmp.id) : scores),
     [scores, selectedEmp],
@@ -723,44 +723,7 @@ function NpsPage() {
       <PageHeader
         title="NPS · Melhoria"
         subtitle={`${scopeLabel}${latest ? ` · ${latest.label}` : " · sem dados"}`}
-        actions={
-          <>
-            <div className="inline-flex rounded-md border bg-card p-0.5 text-xs">
-              <button
-                onClick={() => navigate({ to: "/nps", search: { emp: "" }, replace: true })}
-                className={classNames(
-                  "inline-flex items-center gap-1 rounded px-2 py-1 font-semibold transition",
-                  !empId ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
-                )}
-              >
-                <Users className="h-3.5 w-3.5" /> Loja
-              </button>
-              <button
-                onClick={() => {
-                  const first = scores.find((s) => s.employee_id)?.employee_id ?? employees[0]?.id ?? "";
-                  if (first) navigate({ to: "/nps", search: { emp: first }, replace: true });
-                }}
-                className={classNames(
-                  "inline-flex items-center gap-1 rounded px-2 py-1 font-semibold transition",
-                  empId ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
-                )}
-              >
-                <User className="h-3.5 w-3.5" /> Individual
-              </button>
-            </div>
-            {empId && (
-              <select
-                value={empId}
-                onChange={(e) => navigate({ to: "/nps", search: { emp: e.target.value }, replace: true })}
-                className="rounded-md border bg-background px-2 py-1.5 text-sm"
-              >
-                {employees.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nome}</option>
-                ))}
-              </select>
-            )}
-          </>
-        }
+        actions={null}
       />
 
       <div className="mx-auto max-w-[1400px] space-y-3 p-3">
@@ -1014,49 +977,33 @@ function NpsPage() {
               {visibleScores.map((s) => {
                 const { name } = extractCode(s.raw_name);
                 const acima = s.det_pct > NPS_DET_THRESHOLD;
-                const empSurveys = surveysForScore(s);
-                const isOpen = expanded === s.id;
                 return (
-                  <div key={s.id}>
-                    <button
-                      onClick={() => setExpanded(isOpen ? null : s.id)}
-                      className={classNames(
-                        "flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-accent/50",
-                        acima && "bg-rose-500/5",
-                      )}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate">{name}</div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {s.code ?? "—"} · {s.inqueritos} inquéritos
-                          {!s.employee_id && <span className="ml-2 text-amber-500">⚠ sem correspondência</span>}
-                        </div>
-                      </div>
-                      <div className="w-20 text-right tabular-nums">
-                        <div className="text-[10px] uppercase text-muted-foreground">NetScore</div>
-                        <div className={classNames("font-bold", s.netscore >= 50 ? "text-emerald-500" : s.netscore >= 0 ? "text-amber-500" : "text-rose-500")}>
-                          {fmtNum(s.netscore, 1)}
-                        </div>
-                      </div>
-                      <div className="w-24 text-right tabular-nums">
-                        <div className="text-[10px] uppercase text-muted-foreground">% Detrat.</div>
-                        <div className={classNames("font-bold", acima ? "text-rose-500" : "text-emerald-500")}>
-                          {(s.det_pct * 100).toFixed(1)}%
-                        </div>
-                      </div>
-                      <ChevronDown className={classNames("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-180")} />
-                    </button>
-                    {isOpen && (
-                      <div className="border-t bg-muted/20 px-3 py-2">
-                        {empSurveys.length > 0 ? (
-                          <SurveyList surveys={empSurveys} onOpen={setSelectedSurvey} />
-                        ) : (
-                          <div className="py-2 text-center text-xs text-muted-foreground">
-                            Sem inquéritos detalhados para este colaborador. Importa o <b>CSV Detalhe</b> para ver assunto e nota de cada inquérito.
-                          </div>
-                        )}
-                      </div>
+                  <div
+                    key={s.id}
+                    className={classNames(
+                      "flex w-full items-center gap-3 px-3 py-2 text-sm",
+                      acima && "bg-rose-500/5",
                     )}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold truncate">{name}</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {s.code ?? "—"} · {s.inqueritos} inquéritos
+                        {!s.employee_id && <span className="ml-2 text-amber-500">⚠ sem correspondência</span>}
+                      </div>
+                    </div>
+                    <div className="w-20 text-right tabular-nums">
+                      <div className="text-[10px] uppercase text-muted-foreground">NetScore</div>
+                      <div className={classNames("font-bold", s.netscore >= 50 ? "text-emerald-500" : s.netscore >= 0 ? "text-amber-500" : "text-rose-500")}>
+                        {fmtNum(s.netscore, 1)}
+                      </div>
+                    </div>
+                    <div className="w-24 text-right tabular-nums">
+                      <div className="text-[10px] uppercase text-muted-foreground">% Detrat.</div>
+                      <div className={classNames("font-bold", acima ? "text-rose-500" : "text-emerald-500")}>
+                        {(s.det_pct * 100).toFixed(1)}%
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -1078,26 +1025,6 @@ function NpsPage() {
           </div>
         )}
       </div>
-      {selectedSurvey && (() => {
-        const personSurveys = surveys.filter(
-          (x) => selectedSurvey.employee_id && x.employee_id === selectedSurvey.employee_id,
-        );
-        const personScore = scores.find(
-          (s) => s.employee_id && s.employee_id === selectedSurvey.employee_id,
-        ) ?? null;
-        const personName = personScore
-          ? extractCode(personScore.raw_name).name
-          : (selectedSurvey.raw_name ? extractCode(selectedSurvey.raw_name).name : "—");
-        return (
-          <SurveyModal
-            survey={selectedSurvey}
-            personName={personName}
-            personSurveys={personSurveys}
-            personScore={personScore}
-            onClose={() => setSelectedSurvey(null)}
-          />
-        );
-      })()}
       {confirmDialog}
     </div>
 
