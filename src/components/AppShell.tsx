@@ -21,8 +21,7 @@ import { useAppearanceBoot } from "@/hooks/use-appearance";
 import { useSettingsSync } from "@/hooks/use-settings-sync";
 import { CommandPalette, useCommandPalette } from "@/components/CommandPalette";
 import { useNpsAlert } from "@/hooks/use-nps-alert";
-import { useDailyReminders, pedirPermissaoNotificacoes } from "@/hooks/use-daily-reminders";
-import { AnnouncementsBanner } from "@/components/AnnouncementsBanner";
+import { pedirPermissaoNotificacoes } from "@/hooks/use-daily-reminders";
 import nosLogo from "@/assets/nos-logo.png.asset.json";
 
 type NavItem = { to: string; label: string; icon: typeof BarChart3 };
@@ -32,7 +31,6 @@ const PRIMARY: NavItem[] = [
   { to: "/", label: "Início", icon: Home },
   { to: "/pds", label: "PDS", icon: BarChart3 },
   { to: "/individual", label: "Individuais", icon: UserCircle },
-  { to: "/avisos", label: "Avisos", icon: Megaphone },
 ];
 
 /** Tudo o resto, numa única lista simples (sem grupos a abrir/fechar). */
@@ -136,8 +134,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const npsAlert = useNpsAlert();
   const npsCount = npsAlert.data?.rows?.length ?? 0;
   const rtStatus = useRealtimeSync();
-  const irParaAvisos = useCallback(() => { navigate({ to: "/avisos" }); }, [navigate]);
-  const { avisosPorLer } = useDailyReminders(irParaAvisos);
   useSessionExpiry(useCallback(() => {
     navigate({ to: "/auth", replace: true });
   }, [navigate]));
@@ -175,7 +171,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
         {PRIMARY.map((item) => (
           <NavLink key={item.to} item={item} pathname={pathname}
-            badge={item.to === "/avisos" ? avisosPorLer : 0} />
+            badge={0} />
         ))}
 
         <div className="my-2 border-t" />
@@ -271,10 +267,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
 
         <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-
-        <div className="px-3 pt-3 md:px-6 empty:hidden">
-          <AnnouncementsBanner />
-        </div>
 
         <main className="flex-1 pb-24 md:pb-6">{children}</main>
 
