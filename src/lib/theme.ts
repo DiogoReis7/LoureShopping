@@ -1,10 +1,12 @@
-export type ThemeId = "neon" | "midnight" | "light";
+export type ThemeId = "neon" | "midnight" | "oceano" | "ambar" | "light";
 
 /** Temas de cor (modo escuro) selecionáveis. "light" fica de fora deste
  *  leque — é gerido à parte pelo alternador Claro/Escuro/Sistema. */
 export const THEMES: { id: ThemeId; label: string; swatch: string[] }[] = [
   { id: "neon",     label: "NOS",      swatch: ["#38bdf8", "#f472b6", "#5eead4", "#0b0f1c"] },
   { id: "midnight", label: "Midnight", swatch: ["#93c5fd", "#c4b5fd", "#67e8f9", "#0a0a1a"] },
+  { id: "oceano",   label: "Oceano",   swatch: ["#22d3ee", "#2dd4bf", "#60a5fa", "#06151c"] },
+  { id: "ambar",    label: "Âmbar",    swatch: ["#fbbf24", "#fb923c", "#f87171", "#1a1208"] },
   { id: "light",    label: "Claro",    swatch: ["#3b82f6", "#ec4899", "#10b981", "#f8fafc"] },
 ];
 

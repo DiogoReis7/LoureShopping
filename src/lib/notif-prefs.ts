@@ -1,6 +1,4 @@
 export type NotifPrefs = {
-  /** Lembrete diário de avisos por ler */
-  avisos: boolean;
   /** Alerta de detratores acima do limite */
   detratores: boolean;
   /** Popup diário de desafios a decorrer */
@@ -10,7 +8,6 @@ export type NotifPrefs = {
 };
 
 export const NOTIF_DEFAULTS: NotifPrefs = {
-  avisos: true,
   detratores: true,
   desafios: true,
   sistema: true,
