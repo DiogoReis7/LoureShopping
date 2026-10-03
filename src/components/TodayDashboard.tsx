@@ -9,6 +9,11 @@ import { useNpsAlert, NPS_DET_THRESHOLD } from "@/hooks/use-nps-alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Zap, ShoppingBag, Ticket, AlertTriangle } from "lucide-react";
 
+const FIXO_CODES = new Set(["tv", "net", "voz", "wifi-total", "migracoes", "migracoes-tv"]);
+const MOVEL_CODES = new Set(["cv", "cv-por-retencao", "pp", "pre-pagos"]);
+const MARCACOES_CODES = new Set(["sm-1a", "sm-2a", "sm-1a-estrela", "sm-2a-estrela", "sm-1a-movel", "sm-2a-movel", "xpert", "ecn", "premium", "segue-retencao"]);
+const EXCLUDED_FROM_PTS = new Set(["combina", "nc"]);
+
 type Tone = "blue" | "green" | "violet" | "pink";
 const TONE: Record<Tone, string> = {
   blue: "var(--neon-blue)",
@@ -85,6 +90,43 @@ export function TodayDashboard() {
     staleTime: 30_000,
   });
 
+  const teamQ = useQuery({
+    queryKey: ["home-today-team", today],
+    queryFn: async () => {
+      const [{ data: sales }, { data: prods }, { data: emps }] = await Promise.all([
+        supabase.from("sales_entries").select("employee_id,product_id,quantidade").eq("data", today),
+        supabase.from("products").select("id,codigo,peso"),
+        supabase.from("employees").select("id,nome,ativo").eq("ativo", true),
+      ]);
+      const pmap = new Map((prods ?? []).map((p: any) => [p.id, p]));
+      const empName = new Map((emps ?? []).map((e: any) => [e.id, e.nome]));
+      const cat = { fixo: 0, movel: 0, marcacoes: 0, maisNegocio: 0 };
+      const byEmp = new Map<string, number>();
+      for (const s of (sales ?? []) as any[]) {
+        const p = pmap.get(s.product_id);
+        if (!p) continue;
+        const code = (p.codigo ?? "").toLowerCase();
+        const q = Number(s.quantidade) || 0;
+        const w = q * (Number(p.peso) || 0);
+        if (FIXO_CODES.has(code)) cat.fixo += w;
+        else if (MOVEL_CODES.has(code)) cat.movel += w;
+        else if (MARCACOES_CODES.has(code)) cat.marcacoes += w;
+        if (!EXCLUDED_FROM_PTS.has(code) && !FIXO_CODES.has(code) && !MOVEL_CODES.has(code) && !MARCACOES_CODES.has(code)) {
+          cat.maisNegocio += w;
+        }
+        if (!EXCLUDED_FROM_PTS.has(code) && s.employee_id) {
+          byEmp.set(s.employee_id, (byEmp.get(s.employee_id) ?? 0) + w);
+        }
+      }
+      const top3 = [...byEmp.entries()]
+        .map(([id, pts]) => ({ nome: empName.get(id) ?? "—", pts }))
+        .sort((a, b) => b.pts - a.pts)
+        .slice(0, 3);
+      return { cat, top3 };
+    },
+    staleTime: 30_000,
+  });
+
   const ticketsQ = useQuery({
     queryKey: ["home-today-tickets", today],
     queryFn: async () => {
@@ -136,6 +178,82 @@ export function TodayDashboard() {
           value={alertCount} formatter={(value) => fmtNum(value, 0)}
           hint={alertCount ? `Acima de ${Math.round(NPS_DET_THRESHOLD * 100)}% detratores` : "Sem alertas"}
         />
+      </div>
+
+      {/* Onde está a vir a venda hoje */}
+      {(() => {
+        const cat = teamQ.data?.cat;
+        const segs = [
+          { label: "Fixo", value: cat?.fixo ?? 0, color: "var(--neon-blue)" },
+          { label: "Móvel", value: cat?.movel ?? 0, color: "var(--success)" },
+          { label: "Marcações", value: cat?.marcacoes ?? 0, color: "var(--neon-violet)" },
+          { label: "Mais Negócio", value: cat?.maisNegocio ?? 0, color: "var(--neon-yellow)" },
+        ];
+        const sum = segs.reduce((a, s) => a + s.value, 0);
+        if (teamQ.isLoading) return <Skeleton className="h-16 rounded-xl" />;
+        return (
+          <div className="rounded-xl border bg-card p-3">
+            <div className="flex h-2.5 w-full gap-1">
+              {segs.map((s) => (
+                <div
+                  key={s.label}
+                  className="h-full min-w-[6px] rounded-full"
+                  style={{
+                    flexGrow: sum > 0 ? Math.max(s.value, sum * 0.015) : 1,
+                    flexBasis: 0,
+                    background: s.value > 0 ? s.color : "var(--muted)",
+                    opacity: s.value > 0 ? 1 : 0.4,
+                  }}
+                />
+              ))}
+            </div>
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+              {segs.map((s) => (
+                <span key={s.label} className="inline-flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.color }} />
+                  {s.label} <b className="tabular-nums text-foreground">{fmtNum(s.value, 2)}</b>
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Top 3 + serviço, lado a lado */}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Link to="/pds" className="rounded-xl border bg-card p-3 hover:bg-accent/40">
+          <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Top 3 de hoje</div>
+          {teamQ.isLoading ? (
+            <Skeleton className="h-16 rounded-md" />
+          ) : (teamQ.data?.top3.length ?? 0) === 0 ? (
+            <div className="py-1 text-xs text-muted-foreground">Ainda sem vendas hoje</div>
+          ) : (
+            <div className="space-y-1">
+              {teamQ.data!.top3.map((r, i) => (
+                <div key={r.nome + i} className="flex items-center gap-2 text-xs">
+                  <span className="w-5 shrink-0 text-center">{["🥇", "🥈", "🥉"][i]}</span>
+                  <span className="flex-1 truncate font-semibold">{r.nome}</span>
+                  <span className="shrink-0 font-bold tabular-nums text-[var(--neon-blue)]">{fmtNum(r.pts, 2)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Link>
+
+        <Link to="/contador" className="rounded-xl border bg-card p-3 hover:bg-accent/40">
+          <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Serviço</div>
+          {ticketsQ.isLoading ? (
+            <Skeleton className="h-16 rounded-md" />
+          ) : (
+            <div className="grid grid-cols-3 gap-y-1.5 text-[11px]">
+              <div>Senhas <b className="tabular-nums text-foreground">{fmtNum(ticketsQ.data?.total ?? 0, 0)}</b></div>
+              <div>Atend. <b className="tabular-nums" style={{ color: "var(--success)" }}>{fmtNum(ticketsQ.data?.atendidos ?? 0, 0)}</b></div>
+              <div>%TD <b className="tabular-nums text-foreground">
+                {ticketsQ.data && ticketsQ.data.total > 0 ? Math.round((ticketsQ.data.atendidos / ticketsQ.data.total) * 100) : 0}%
+              </b></div>
+            </div>
+          )}
+        </Link>
       </div>
     </section>
   );
