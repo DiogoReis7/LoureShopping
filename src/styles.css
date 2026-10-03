@@ -390,6 +390,66 @@ main > * { animation: app-fade-in 0.24s ease-out both; }
   --ring: oklch(0.78 0.14 70);
   --sidebar-primary: oklch(0.78 0.14 70);
 }
+
+/* Esmeralda — único tema que se mantém (com ajustes) tanto em modo
+   escuro como em modo claro. Variante escura: */
+:root[data-theme="esmeralda"] {
+  --neon-blue:   #34d399;
+  --neon-pink:   #f472b6;
+  --neon-green:  #a3e635;
+  --neon-orange: #fb923c;
+  --neon-violet: #38bdf8;
+  --background: oklch(0.15 0.025 155);
+  --card: oklch(0.20 0.03 155);
+  --sidebar: oklch(0.12 0.025 155);
+  --primary: oklch(0.72 0.13 155);
+  --ring: oklch(0.72 0.13 155);
+  --sidebar-primary: oklch(0.72 0.13 155);
+}
+/* Esmeralda — variante clara (usada quando o modo é Claro): */
+:root[data-theme="esmeralda"]:not(.dark) {
+  --neon-blue:   #059669;
+  --neon-pink:   #db2777;
+  --neon-green:  #15803d;
+  --neon-orange: #ea580c;
+  --neon-violet: #0891b2;
+  --background: oklch(0.99 0.01 155);
+  --foreground: oklch(0.18 0.03 155);
+  --card: oklch(1 0 0.0001 155);
+  --card-foreground: oklch(0.18 0.03 155);
+  --popover: oklch(1 0 0.0001 155);
+  --popover-foreground: oklch(0.18 0.03 155);
+  --muted: oklch(0.96 0.015 155);
+  --muted-foreground: oklch(0.42 0.03 155);
+  --accent: oklch(0.93 0.03 155);
+  --accent-foreground: oklch(0.18 0.03 155);
+  --secondary: oklch(0.93 0.03 155);
+  --secondary-foreground: oklch(0.18 0.03 155);
+  --border: oklch(0.18 0.03 155 / 14%);
+  --input: oklch(0.18 0.03 155 / 18%);
+  --primary: oklch(0.48 0.13 155);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: oklch(0.46 0.13 155);
+  --success: oklch(0.5 0.14 152);
+  --warning: oklch(0.58 0.14 75);
+  --destructive: oklch(0.55 0.21 25);
+  --sidebar: oklch(0.975 0.012 155);
+  --sidebar-foreground: oklch(0.2 0.03 155);
+  --sidebar-primary: oklch(0.48 0.13 155);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.93 0.03 155);
+  --sidebar-accent-foreground: oklch(0.18 0.03 155);
+  --sidebar-border: oklch(0.18 0.03 155 / 12%);
+  --chart-1: oklch(0.5 0.14 152);
+  --chart-2: oklch(0.48 0.13 155);
+  --chart-3: oklch(0.58 0.14 75);
+  --chart-4: oklch(0.55 0.21 10);
+  --chart-5: oklch(0.52 0.12 195);
+}
+:root[data-theme="esmeralda"]:not(.dark) .neon-text { text-shadow: none; }
+:root[data-theme="esmeralda"]:not(.dark) .kpi-neon { text-shadow: none; }
+:root[data-theme="esmeralda"]:not(.dark) .neon-badge { color: var(--foreground); }
+
 :root[data-theme="light"] {
   --neon-blue:   #2563eb;
   --neon-pink:   #db2777;
