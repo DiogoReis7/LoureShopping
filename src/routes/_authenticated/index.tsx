@@ -15,7 +15,6 @@ import {
 import { NeonIcon, NeonBadge, pickIcon } from "@/lib/product-icons";
 import { TodayDashboard } from "@/components/TodayDashboard";
 import { HomeHighlights } from "@/components/HomeHighlights";
-const HomeDashboardCharts = lazy(() => import("@/components/HomeDashboardCharts").then((m) => ({ default: m.HomeDashboardCharts })));
 const WeeklySummary = lazy(() => import("@/components/WeeklySummary").then((m) => ({ default: m.WeeklySummary })));
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -44,7 +43,6 @@ const ALL_ITEMS: { to: string; label: string; desc: string; icon: typeof BarChar
   { to: "/produtos", label: "Produtos", desc: "Catálogo e pesos", icon: Package, color: "var(--neon-orange)", group: "Qualidade & Gestão" },
   { to: "/tv", label: "Modo TV", desc: "Ranking em ecrã inteiro", icon: Monitor, color: "var(--neon-violet)", group: "Qualidade & Gestão" },
   { to: "/admin", label: "Contas", desc: "Acessos da equipa", icon: ShieldCheck, color: "var(--neon-blue)", group: "Qualidade & Gestão", adminOnly: true },
-  { to: "/avisos", label: "Avisos", desc: "Quadro de comunicados", icon: Megaphone, color: "var(--neon-pink)", group: "Loja & Equipa" },
 ];
 
 const GROUPS = ["Vendas", "Atendimento", "Qualidade & Gestão", "Loja & Equipa"];
@@ -55,7 +53,7 @@ function HomeHub() {
   const { prefs, togglePin } = useUserPrefs(user?.id ?? null);
   const [q, setQ] = useState("");
   const qc = useQueryClient();
-  const [tab, setTab] = useState<"resumo" | "atalhos" | "tendencias">("resumo");
+  const [tab, setTab] = useState<"resumo" | "atalhos">("resumo");
   const [refreshing, setRefreshing] = useState(false);
   const [lastSync, setLastSync] = useState<string | null>(null);
 
@@ -127,7 +125,6 @@ function HomeHub() {
           {([
             ["resumo", "Resumo"],
             ["atalhos", "Atalhos"],
-            ["tendencias", "Tendências"],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -159,12 +156,6 @@ function HomeHub() {
               </div>
             )}
           </div>
-        )}
-
-        {tab === "tendencias" && (
-          <Suspense fallback={<Skeleton className="h-64 rounded-2xl" />}>
-            <HomeDashboardCharts />
-          </Suspense>
         )}
 
         {tab === "atalhos" && (
