@@ -10,12 +10,11 @@ export const WEEK_BLOCKS: { id: WeekBlockId; label: string }[] = [
   { id: "det", label: "Detratores" },
 ];
 
-export type HomeCardId = "hoje" | "destaques" | "semana";
+export type HomeCardId = "hoje" | "destaques";
 
 export const HOME_CARDS: { id: HomeCardId; label: string; hint: string }[] = [
   { id: "hoje", label: "Resumo de hoje", hint: "Vendas, senhas e pontos do dia." },
   { id: "destaques", label: "Destaques", hint: "Melhores do dia, NPS e alertas." },
-  { id: "semana", label: "Resumo semanal", hint: "Comparação da semana por colaborador." },
 ];
 
 export type UserPrefs = {
@@ -32,7 +31,7 @@ const DEFAULTS: UserPrefs = {
   weekBlocks: ["pts", "tma", "idle", "det"],
   weekTopN: 3,
   weekShowBottom: true,
-  homeCards: ["hoje", "destaques", "semana"],
+  homeCards: ["hoje", "destaques"],
 };
 
 function key(userId: string | null) {
