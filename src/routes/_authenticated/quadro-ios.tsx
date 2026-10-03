@@ -26,10 +26,10 @@ const norm = (s: string | null | undefined) =>
   (s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 // Targets MÍNIMOS DIÁRIOS (do quadro físico)
-// Loja:  FIXO 20 · MÓVEL 20 · MARCAÇÕES 19 · +NEGÓCIO 9 · TOTAL 50 · NC 5 · AL 1 · EN 1
-// Vendedor: PONTOS 10 · NC 1 · AL 1 · ENERGIA 1
-const MIN_LOJA = { fixo: 20, movel: 20, marcacoes: 19, maisNegocio: 9, total: 50, nc: 5, alarme: 1, energia: 1 };
-const MIN_EMP = { pontos: 10, nc: 1, alarme: 1, energia: 1 };
+// Loja:  FIXO 7 · MÓVEL 9 · MARCAÇÕES 11 · +NEGÓCIO 5 · TOTAL 33 · NC 2 · AL 1 · EN 2
+// Vendedor: PONTOS 7 · NC 1 · AL 1 · ENERGIA 1
+const MIN_LOJA = { fixo: 7, movel: 9, marcacoes: 11, maisNegocio: 5, total: 33, nc: 2, alarme: 1, energia: 2 };
+const MIN_EMP = { pontos: 7, nc: 1, alarme: 1, energia: 1 };
 
 // Mapeamento por código de produto (NC é indicador, não pondera)
 const FIXO_CODES = new Set(["tv", "net", "voz", "wifi-total", "migracoes", "migracoes-tv"]);
