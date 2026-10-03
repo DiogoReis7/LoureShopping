@@ -16,10 +16,10 @@ import {
 import { ShieldAlert, UserPlus, KeyRound, Check, X, Trash2, ShieldCheck, ShieldOff, History, Download, Crown, Megaphone, CalendarClock, Users, UserCog } from "lucide-react";
 import { exportCsv } from "@/lib/export-csv";
 import { BackupPanel } from "@/components/BackupPanel";
-import { AdminAnnouncements, AdminEmployees } from "@/components/AdminHub";
+import { AdminEmployees } from "@/components/AdminHub";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: pageHead("Gestão · PDS LoureShopping", "Gestão central da loja: contas, avisos, reuniões e colaboradores."),
+  head: pageHead("Gestão · PDS LoureShopping", "Gestão central da loja: contas e colaboradores."),
   errorComponent: ({ error, reset }) => <RouteError error={error} reset={reset} />,
   notFoundComponent: () => <RouteNotFound />,
   component: AdminPage,
@@ -48,11 +48,10 @@ function AdminPage() {
   const [pwId, setPwId] = useState<string | null>(null);
   const [pwValue, setPwValue] = useState("");
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"contas" | "avisos" | "colaboradores" | "atividade">("contas");
+  const [tab, setTab] = useState<"contas" | "colaboradores" | "atividade">("contas");
 
   const TABS = [
     { id: "contas" as const, label: "Contas", icon: UserCog },
-    { id: "avisos" as const, label: "Avisos", icon: Megaphone },
     { id: "colaboradores" as const, label: "Colaboradores", icon: Users },
     { id: "atividade" as const, label: "Atividade", icon: History },
   ];
@@ -128,7 +127,7 @@ function AdminPage() {
 
   return (
     <div className="animate-in fade-in duration-300">
-      <PageHeader title="Gestor de loja" subtitle="Gestão central: contas, avisos, reuniões e colaboradores" />
+      <PageHeader title="Gestor de loja" subtitle="Gestão central: contas e colaboradores" />
       <div className="p-4 md:p-6 space-y-4">
 
         <div className="flex flex-wrap gap-1 rounded-xl border bg-card p-1">
@@ -142,7 +141,6 @@ function AdminPage() {
           ))}
         </div>
 
-        {tab === "avisos" && <AdminAnnouncements />}
         {tab === "colaboradores" && <AdminEmployees />}
         {tab === "atividade" && <ActivityLogSection />}
 
