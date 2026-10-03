@@ -15,7 +15,6 @@ import {
 import { NeonIcon, NeonBadge, pickIcon } from "@/lib/product-icons";
 import { TodayDashboard } from "@/components/TodayDashboard";
 import { HomeHighlights } from "@/components/HomeHighlights";
-const WeeklySummary = lazy(() => import("@/components/WeeklySummary").then((m) => ({ default: m.WeeklySummary })));
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Skeleton } from "@/components/ui/skeleton";
 import { haptic } from "@/lib/haptics";
@@ -141,11 +140,6 @@ function HomeHub() {
             {prefs.homeCards.includes("hoje") && <TodayDashboard />}
             <div className="space-y-4">
               {prefs.homeCards.includes("destaques") && <HomeHighlights />}
-              {prefs.homeCards.includes("semana") && (
-                <Suspense fallback={<Skeleton className="h-64 rounded-2xl" />}>
-                  <WeeklySummary />
-                </Suspense>
-              )}
             </div>
             {prefs.homeCards.length === 0 && (
               <div className="rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground">
