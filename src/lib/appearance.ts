@@ -1,4 +1,4 @@
-import { applyTheme, getTheme, setThemeForUser, type ThemeId } from "@/lib/theme";
+import { applyTheme, getTheme, setThemeForUser, THEMES, type ThemeId } from "@/lib/theme";
 
 export type ColorMode = "light" | "dark" | "system";
 export type TextScale = 100 | 110 | 120 | 130;
@@ -59,17 +59,31 @@ export function systemPrefersDark(): boolean {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+function isLightCompatible(id: ThemeId): boolean {
+  return THEMES.find((t) => t.id === id)?.lightCompatible === true;
+}
+
+/** Se o pedido for modo claro e o tema escolhido for compatível com
+ *  modo claro (ex.: Esmeralda), mantém-se esse tema — só os temas
+ *  "normais" revertem para o Claro genérico em modo claro. */
 export function resolvedThemeId(a: Appearance): ThemeId {
-  if (a.mode === "light") return "light";
-  if (a.mode === "dark") return a.darkTheme === "light" ? "neon" : a.darkTheme;
-  return systemPrefersDark() ? (a.darkTheme === "light" ? "neon" : a.darkTheme) : "light";
+  const wantsLight = a.mode === "light" || (a.mode === "system" && !systemPrefersDark());
+  if (wantsLight) {
+    return isLightCompatible(a.darkTheme) ? a.darkTheme : "light";
+  }
+  return a.darkTheme === "light" ? "neon" : a.darkTheme;
 }
 
 export function applyAppearance(a: Appearance, userId?: string | null) {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
   const theme = resolvedThemeId(a);
+  const wantsLight = a.mode === "light" || (a.mode === "system" && !systemPrefersDark());
   applyTheme(theme);
+  // Corrige a classe "dark": applyTheme só sabe escurecer com base no id do
+  // tema, mas um tema compatível com modo claro (ex.: Esmeralda) pode
+  // precisar de ficar claro mesmo com um id que não é "light".
+  root.classList.toggle("dark", !wantsLight);
   if (userId !== undefined) setThemeForUser(userId ?? null, theme);
   root.style.setProperty("--app-text-scale", `${a.textScale}%`);
   root.setAttribute("data-contrast", a.highContrast ? "alto" : "normal");
