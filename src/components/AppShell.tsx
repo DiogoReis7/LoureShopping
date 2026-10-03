@@ -6,7 +6,7 @@ import {
   ClipboardList, Users, Package,
   Calculator, Ticket, UserCircle, Menu, BarChart3, CalendarClock,
   Lock, LogOut, Home, Search, Plus, WifiOff, HeartHandshake, Activity, ShieldCheck, Coffee,
-  CalendarOff, Megaphone, Settings,
+  CalendarOff, Megaphone, Settings, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { classNames } from "@/lib/domain";
 import { useIsAdmin } from "@/hooks/use-is-admin";
@@ -126,6 +126,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("ls-sidebar-collapsed") === "1";
+  });
+  const toggleSidebarCollapsed = useCallback(() => {
+    setSidebarCollapsed((v) => {
+      const next = !v;
+      try { localStorage.setItem("ls-sidebar-collapsed", next ? "1" : "0"); } catch {}
+      return next;
+    });
+  }, []);
   const [signedIn, setSignedIn] = useState(false);
   const isAdmin = useIsAdmin();
   const online = useOnlineStatus();
@@ -167,6 +178,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex h-14 items-center gap-2 px-3 border-b">
         <Brand />
         <LiveDot status={rtStatus} />
+        <button
+          onClick={toggleSidebarCollapsed}
+          aria-label="Ocultar menu"
+          title="Ocultar menu"
+          className="ml-auto hidden md:grid h-7 w-7 shrink-0 place-items-center rounded-md hover:bg-sidebar-accent"
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
         {PRIMARY.map((item) => (
@@ -225,7 +244,20 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen text-foreground">
-      <div className="hidden md:block sticky top-0 h-screen shrink-0">{sidebar}</div>
+      {sidebarCollapsed ? (
+        <div className="hidden md:flex sticky top-0 h-screen w-10 shrink-0 flex-col items-center border-r bg-sidebar pt-3">
+          <button
+            onClick={toggleSidebarCollapsed}
+            aria-label="Mostrar menu"
+            title="Mostrar menu"
+            className="grid h-7 w-7 place-items-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            <PanelLeftOpen className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="hidden md:block sticky top-0 h-screen shrink-0">{sidebar}</div>
+      )}
 
       {sidebarOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
