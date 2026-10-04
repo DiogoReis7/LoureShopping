@@ -90,6 +90,32 @@ export function TodayDashboard() {
     staleTime: 30_000,
   });
 
+  const dayPaceQ = useQuery({
+    queryKey: ["home-day-pace", today],
+    queryFn: async () => {
+      const d = new Date();
+      const since = new Date(d);
+      since.setDate(since.getDate() - 35);
+      const [{ data: sales }, { data: prods }] = await Promise.all([
+        supabase.from("sales_entries").select("data,product_id,quantidade").gte("data", ymd(since)).lt("data", today),
+        supabase.from("products").select("id,codigo,peso"),
+      ]);
+      const pmap = new Map((prods ?? []).map((p: any) => [p.id, p]));
+      const byDate = new Map<string, number>();
+      for (const s of (sales ?? []) as any[]) {
+        const p = pmap.get(s.product_id);
+        if (!p || EXCLUDED.has(p.codigo)) continue;
+        const w = (Number(s.quantidade) || 0) * (Number(p.peso) || 0);
+        byDate.set(s.data, (byDate.get(s.data) ?? 0) + w);
+      }
+      const todayWeekday = d.getDay();
+      const sameWeekday = [...byDate.entries()].filter(([date]) => new Date(date + "T12:00:00").getDay() === todayWeekday);
+      const avg = sameWeekday.length > 0 ? sameWeekday.reduce((a, [, v]) => a + v, 0) / sameWeekday.length : null;
+      return { avg, samples: sameWeekday.length };
+    },
+    staleTime: 60_000,
+  });
+
   const teamQ = useQuery({
     queryKey: ["home-today-team", today],
     queryFn: async () => {
@@ -155,8 +181,31 @@ export function TodayDashboard() {
 
   return (
     <section className="space-y-2">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-bold">Hoje</h2>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold">Hoje</h2>
+          {(() => {
+            const avg = dayPaceQ.data?.avg;
+            const samples = dayPaceQ.data?.samples ?? 0;
+            const pts = salesQ.data?.pts;
+            if (dayPaceQ.isLoading || salesQ.isLoading || pts === undefined || avg == null || samples < 2) return null;
+            const ratio = avg > 0 ? pts / avg : pts > 0 ? 2 : 1;
+            const good = ratio >= 1.1, bad = ratio < 0.8;
+            const color = good ? "var(--success)" : bad ? "var(--destructive)" : "var(--neon-yellow)";
+            const label = good ? "Acima do costume" : bad ? "Abaixo do costume" : "Dia normal";
+            const pct = avg > 0 ? Math.round((ratio - 1) * 100) : null;
+            return (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                style={{ background: `color-mix(in oklab, ${color} 16%, transparent)`, color }}
+                title={`Pontos de hoje vs. a média dos últimos ${samples} dias com o mesmo dia da semana`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+                {label}{pct !== null && ` · ${pct > 0 ? "+" : ""}${pct}%`}
+              </span>
+            );
+          })()}
+        </div>
         <span className="text-[11px] capitalize text-muted-foreground">{dateLabel}</span>
       </div>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3 stagger">

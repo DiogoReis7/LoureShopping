@@ -16,7 +16,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSessionExpiry } from "@/hooks/use-session-expiry";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeSwitcher, useThemeBoot } from "@/components/ThemeSwitcher";
-import { ColorModeButton } from "@/components/AppearanceSettings";
 import { useAppearanceBoot } from "@/hooks/use-appearance";
 import { useSettingsSync } from "@/hooks/use-settings-sync";
 import { CommandPalette, useCommandPalette } from "@/components/CommandPalette";
@@ -214,7 +213,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-between px-1">
           <span className="text-[11px] text-muted-foreground">Aparência</span>
           <div className="flex items-center gap-1">
-            <ColorModeButton compact />
             <ThemeSwitcher compact={false} userId={user?.id ?? null} />
           </div>
         </div>
@@ -284,7 +282,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Search className="h-5 w-5" />
           </button>
           <LiveDot status={rtStatus} label={false} />
-          <ColorModeButton compact />
           <ThemeSwitcher compact userId={user?.id ?? null} />
         </header>
 
