@@ -26,7 +26,6 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
 
 const TOGGLES: { id: keyof NotifPrefs; label: string; hint: string }[] = [
   { id: "detratores", label: "Alerta de detratores", hint: "Quando estás acima do limite de % de detratores." },
-  { id: "desafios", label: "Desafios a decorrer", hint: "Resumo diário do teu progresso nos desafios." },
   { id: "sistema", label: "Notificações do dispositivo", hint: "Além dos avisos dentro da app, usa o sistema." },
 ];
 

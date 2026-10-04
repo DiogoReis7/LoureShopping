@@ -275,25 +275,32 @@ function PdsPage() {
       const atendidos = ts.filter((x) => x.estado === "terminada").length;
       const aRows = ts.filter((x) => x.atendimento_s && !folgaEmpIds.has(e.id));
       const tma = aRows.reduce((a, r) => a + (r.atendimento_s ?? 0), 0) / (aRows.length || 1);
-      let qty = 0, pts = 0, tvs = 0, alarmes = 0, movel = 0, marcacoes = 0, energia = 0;
+      let qty = 0, pts = 0, tvs = 0, alarmes = 0, movel = 0, marcacoes = 0, energia = 0, maisNegocio = 0;
       for (const s of ss) {
         const p = prodMap.get(s.product_id);
         if (!p) continue;
         const q = Number(s.quantidade);
+        const w = q * Number(p.peso ?? 0);
         const code = (p.codigo ?? "").toLowerCase();
         const n = normalize(p.categoria ?? p.nome);
-        if (code === "tv" || code === "migracoes-tv" || n.includes("tv")) tvs += q;
+        const isFixo = code === "tv" || code === "migracoes-tv" || n.includes("tv");
+        if (isFixo) tvs += q;
         if (code === "migracoes-tv") continue;
         qty += q;
-        if (code === "alarmes" || code === "alarme" || n.includes("alarme")) alarmes += q;
-        if (MOVEL_CODES.has(code)) movel += q;
-        if (MARCACOES_CODES.has(code)) marcacoes += q;
-        if (code === "energia" || n.includes("energia")) energia += q;
+        const isAlarme = code === "alarmes" || code === "alarme" || n.includes("alarme");
+        if (isAlarme) alarmes += q;
+        const isMovel = MOVEL_CODES.has(code);
+        if (isMovel) movel += q;
+        const isMarcacoes = MARCACOES_CODES.has(code);
+        if (isMarcacoes) marcacoes += q;
+        const isEnergia = code === "energia" || n.includes("energia");
+        if (isEnergia) energia += q;
+        if (!EXCLUDED_FROM_PTS.has(code) && !isFixo && !isMovel && !isMarcacoes) maisNegocio += w;
         if (EXCLUDED_FROM_PTS.has(code)) continue;
-        pts += q * Number(p.peso ?? 0);
+        pts += w;
       }
       const tep = atendidos > 0 ? (pts / atendidos) * 100 : 0;
-      return { e, atendidos, tma, qty, pts, tvs, alarmes, movel, marcacoes, energia, tep };
+      return { e, atendidos, tma, qty, pts, tvs, alarmes, movel, marcacoes, energia, maisNegocio, tep };
     }).sort((a, b) => b.pts - a.pts || b.qty - a.qty);
   }, [employees, tDay, sales, prodMap, folgaEmpIds]);
 
@@ -897,7 +904,7 @@ function PdsPage() {
                 </div>
               ) : (
                 <div className="overflow-auto" style={{ maxHeight: "min(48vh, 420px)" }}>
-                  <table className="w-full min-w-[560px] text-xs md:text-sm">
+                  <table className="w-full min-w-[720px] text-xs md:text-sm">
                     <thead className="sticky top-0 z-10 bg-card">
                       <tr className="border-b text-[10px] uppercase tracking-wide text-muted-foreground">
                         <th className="px-2.5 py-2 text-left font-semibold">Vendedor</th>
@@ -906,6 +913,8 @@ function PdsPage() {
                         <th className="px-2.5 py-2 text-right font-semibold">Móvel</th>
                         <th className="px-2.5 py-2 text-right font-semibold">Alarme</th>
                         <th className="px-2.5 py-2 text-right font-semibold">Energia</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">Marcações</th>
+                        <th className="px-2.5 py-2 text-right font-semibold">+Negócio</th>
                         <th className="px-2.5 py-2 text-right font-semibold">Atd.</th>
                         <th className="px-2.5 py-2 text-right font-semibold">TMA</th>
                         <th className="px-2.5 py-2 text-right font-semibold">Efic.</th>
@@ -933,6 +942,8 @@ function PdsPage() {
                             <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.movel}</td>
                             <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.alarmes}</td>
                             <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.energia}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.marcacoes}</td>
+                            <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{fmtNum(r.maisNegocio, 2)}</td>
                             <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{r.atendidos}</td>
                             <td className="px-2.5 py-2 text-right tabular-nums text-muted-foreground">{fmtSecsAsTime(r.tma)}</td>
                             <td className="px-2.5 py-2 text-right">
