@@ -1,15 +1,12 @@
 export type NotifPrefs = {
   /** Alerta de detratores acima do limite */
   detratores: boolean;
-  /** Popup diário de desafios a decorrer */
-  desafios: boolean;
   /** Usar notificações do sistema (além dos avisos dentro da app) */
   sistema: boolean;
 };
 
 export const NOTIF_DEFAULTS: NotifPrefs = {
   detratores: true,
-  desafios: true,
   sistema: true,
 };
 
