@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { MonthDayPicker } from "@/components/MonthDayPicker";
 import { useSharedDate } from "@/hooks/useSharedDate";
-import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Calendar } from "lucide-react";
+import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Calendar, Download } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -46,6 +46,86 @@ function fmtExcelDate(v: unknown): string | null {
     if (!isNaN(t.getTime())) return isoDate(t.getFullYear(), t.getMonth() + 1, t.getDate());
   }
   return null;
+}
+
+/** Extrai intervalos "HH:MM-HH:MM" de um texto livre (ex.: "09:00-13:00 / 14:00-18:00 (8h)"). */
+function parseShiftTimes(desc: string | null | undefined): { start: string; end: string }[] {
+  if (!desc) return [];
+  const out: { start: string; end: string }[] = [];
+  for (const m of desc.matchAll(/(\d{1,2})[:.](\d{2})\s*-\s*(\d{1,2})[:.](\d{2})/g)) {
+    out.push({ start: `${pad(+m[1])}${m[2]}`, end: `${pad(+m[3])}${m[4]}` });
+  }
+  return out;
+}
+
+function icsEscape(s: string) {
+  return s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+
+/** Gera um ficheiro .ics com os turnos de um colaborador num mês e despoleta a transferência. */
+function exportShiftsToIcs(employee: Employee, shifts: Shift[], year: number, month: number) {
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//LoureShopping//Horarios//PT", "CALSCALE:GREGORIAN"];
+  let n = 0;
+  for (const s of shifts.filter((x) => x.employee_id === employee.id)) {
+    const dateCompact = s.data.replace(/-/g, "");
+    const est = normalizeEstado(s.descricao, Number(s.horas ?? 0));
+    n++;
+    if (est === "trabalha") {
+      const ranges = parseShiftTimes(s.descricao);
+      if (ranges.length > 0) {
+        ranges.forEach((r, i) => {
+          lines.push(
+            "BEGIN:VEVENT",
+            `UID:ls-${employee.id}-${s.data}-${i}@loureshopping.local`,
+            `DTSTAMP:${stamp}`,
+            `DTSTART:${dateCompact}T${r.start}00`,
+            `DTEND:${dateCompact}T${r.end}00`,
+            `SUMMARY:${icsEscape(`Trabalho — ${employee.nome}`)}`,
+            `DESCRIPTION:${icsEscape(s.descricao ?? "")}`,
+            "END:VEVENT",
+          );
+        });
+      } else {
+        lines.push(
+          "BEGIN:VEVENT",
+          `UID:ls-${employee.id}-${s.data}@loureshopping.local`,
+          `DTSTAMP:${stamp}`,
+          `DTSTART;VALUE=DATE:${dateCompact}`,
+          `SUMMARY:${icsEscape(`Trabalho (${s.horas ?? 0}h) — ${employee.nome}`)}`,
+          "END:VEVENT",
+        );
+      }
+    } else if (est === "folga" || est === "ferias") {
+      const next = new Date(year, month - 1, Number(s.data.slice(8, 10)) + 1);
+      const nextCompact = isoDate(next.getFullYear(), next.getMonth() + 1, next.getDate()).replace(/-/g, "");
+      lines.push(
+        "BEGIN:VEVENT",
+        `UID:ls-${employee.id}-${s.data}@loureshopping.local`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART;VALUE=DATE:${dateCompact}`,
+        `DTEND;VALUE=DATE:${nextCompact}`,
+        `SUMMARY:${icsEscape(est === "folga" ? `Folga — ${employee.nome}` : `Férias — ${employee.nome}`)}`,
+        "END:VEVENT",
+      );
+    } else {
+      n--;
+    }
+  }
+  lines.push("END:VCALENDAR");
+  if (n === 0) {
+    toast.info("Sem turnos para exportar neste mês.");
+    return;
+  }
+  const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `horario-${employee.slug || employee.nome}-${year}-${pad(month)}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function HorariosPage() {
@@ -360,7 +440,19 @@ function HorariosPage() {
               <tr>
                 <th className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-left font-medium">Dia</th>
                 {activeEmps.map(e => (
-                  <th key={e.id} className="px-2 py-2 text-left font-medium whitespace-nowrap">{e.nome}</th>
+                  <th key={e.id} className="px-2 py-2 text-left font-medium whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5">
+                      {e.nome}
+                      <button
+                        onClick={() => exportShiftsToIcs(e, shifts, date.year, date.month)}
+                        className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                        title={`Exportar horário de ${e.nome} para o calendário`}
+                        aria-label={`Exportar horário de ${e.nome}`}
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                      </button>
+                    </span>
+                  </th>
                 ))}
               </tr>
             </thead>
