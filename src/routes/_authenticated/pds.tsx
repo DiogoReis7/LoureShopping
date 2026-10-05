@@ -47,11 +47,23 @@ const MARCACOES_CODES = new Set(["sm-1a", "sm-2a", "sm-1a-estrela", "sm-2a-estre
 const MOVEL_CODES = new Set(["cv", "cv-por-retencao", "pp", "pre-pagos"]);
 const RETOMA_CODES = new Set(["cv-retoma", "retoma"]);
 const FIXO_CODES = new Set(["tv", "net", "voz", "wifi-total", "migracoes", "migracoes-tv"]);
+// Nomes/categorias que também contam como Fixo mesmo que o código do produto
+// não bata certo com FIXO_CODES (ex.: produto chamado "Net Fibra 1000MB").
+const FIXO_NAME_HINTS = ["net", "internet", "fibra", "wifi", "televis", " tv", "voz fixa"];
 // Códigos excluídos do total "Ponderado" / %TEP (alinhado com /desempenho, /desafios e /tv).
 const EXCLUDED_FROM_PTS = new Set(["combina", "nc"]);
 
 function normalize(s: string | null | undefined) {
   return (s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Um produto conta como "Fixo" pelo código exato OU, em alternativa,
+ *  pelo nome/categoria (apanha variantes como "Net Fibra", "Internet 1000MB"). */
+function isFixoProduct(p: { codigo?: string | null; nome?: string | null; categoria?: string | null }) {
+  const code = (p.codigo ?? "").toLowerCase();
+  if (FIXO_CODES.has(code)) return true;
+  const n = normalize(`${p.nome ?? ""} ${p.categoria ?? ""}`);
+  return FIXO_NAME_HINTS.some((hint) => n.includes(hint));
 }
 
 function PdsPage() {
@@ -172,9 +184,9 @@ function PdsPage() {
       else if (MOVEL_CODES.has(code)) m["Móvel"] += w;
       else if (MARCACOES_CODES.has(code)) m["Marcações"] += w;
       else if (code === "energia" || code === "energia-sa") m["Energia"] += q;
-      else if (FIXO_CODES.has(code)) m["Fixo"] += w;
+      else if (isFixoProduct(p)) m["Fixo"] += w;
       if (isRetoma) m["MaisNegocio"] += w;
-      if (!EXCLUDED_FROM_PTS.has(code) && !FIXO_CODES.has(code) && !MOVEL_CODES.has(code) && !MARCACOES_CODES.has(code) && !RETOMA_CODES.has(code)) {
+      if (!EXCLUDED_FROM_PTS.has(code) && !isFixoProduct(p) && !MOVEL_CODES.has(code) && !MARCACOES_CODES.has(code) && !RETOMA_CODES.has(code)) {
         m["MaisNegocio"] += w;
       }
     }
@@ -286,7 +298,7 @@ function PdsPage() {
         const w = q * Number(p.peso ?? 0);
         const code = (p.codigo ?? "").toLowerCase();
         const n = normalize(p.categoria ?? p.nome);
-        const isFixo = code === "tv" || code === "migracoes-tv" || n.includes("tv");
+        const isFixo = isFixoProduct(p);
         const isRetoma = RETOMA_CODES.has(code);
         if (isFixo) tvs += q;
         if (code === "migracoes-tv") continue;
