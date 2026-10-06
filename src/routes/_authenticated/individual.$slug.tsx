@@ -230,7 +230,7 @@ function IndividualPage() {
         actions={
           <div className="flex items-center gap-2">
             <Link
-              to="/_authenticated/pds"
+              to="/pds"
               className="inline-flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1.5 text-xs font-semibold hover:bg-accent"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
