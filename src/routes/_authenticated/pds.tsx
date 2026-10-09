@@ -290,9 +290,7 @@ function PdsPage() {
         const n = normalize(p.categoria ?? p.nome);
         const isFixo = FIXO_CODES.has(code);
         const isRetoma = RETOMA_CODES.has(code);
-        // A coluna "TV" conta apenas vendas do produto TV; NET, Voz,
-        // Wi-Fi Total e migrações pertencem ao total Fixo, não a TV.
-        if (code === "tv") tvs += q;
+        if (isFixo) tvs += q;
         if (code === "migracoes-tv") continue;
         qty += q;
         const isAlarme = code === "alarmes" || code === "alarme" || n.includes("alarme");
@@ -346,6 +344,7 @@ function PdsPage() {
   }, [combinaTotal]);
 
   const captureRef = useRef<HTMLDivElement | null>(null);
+  const eodCaptureRef = useRef<HTMLDivElement | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [busy, setBusy] = useState<null | "png" | "copy">(null);
   const [done, setDone] = useState<null | "png" | "copy">(null);
@@ -473,7 +472,7 @@ function PdsPage() {
     const lines: string[] = [];
     lines.push(`🏁 FIM DE DIA · LOURESHOPPING · ${dayLabel}`);
     lines.push("———————————————");
-    lines.push(`📦 Vendas: ${fmtNum(totalGlobal, 0)} un · ${fmtNum(totalPtsDay, 2)} pts`);
+    lines.push(`📦 Vendas: ${fmtNum(totalPtsDay, 2)} pts`);
     lines.push(`🔗 COMBINA: ${fmtNum(combinaTotal, 0)} adesões`);
     lines.push(
       `🎫 Senhas: ${fmtNum(totDay.atendidos, 0)} atendidas / ${fmtNum(totDay.total, 0)} · TME ${fmtSecsAsTime(totDay.tme)} · TMA ${fmtSecsAsTime(totDay.tma)}`,
@@ -489,7 +488,7 @@ function PdsPage() {
       lines.push("");
       lines.push("Ranking:");
       topRows.forEach((r, i) => {
-        lines.push(`${medals[i] ?? `${i + 1}.`} ${r.e.nome} · ${fmtNum(r.pts, 2)} pts (${fmtNum(r.qty, 0)} un)`);
+        lines.push(`${medals[i] ?? `${i + 1}.`} ${r.e.nome} · ${fmtNum(r.pts, 2)} pts`);
       });
     }
     return lines.join("\n");
@@ -519,6 +518,44 @@ function PdsPage() {
       }
     } catch (e: any) {
       if (e?.name !== "AbortError") await copyEodText();
+    }
+  }
+
+  async function snapshotEod(): Promise<Blob | null> {
+    const node = eodCaptureRef.current;
+    if (!node) return null;
+    const { toBlob } = await import("html-to-image");
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return toBlob(node, {
+      width: 900,
+      height: Math.max(500, node.scrollHeight),
+      pixelRatio: 2,
+      backgroundColor: "#03130b",
+      cacheBust: true,
+      style: { width: "900px", maxHeight: "none", height: "auto", overflow: "visible", margin: "0", transform: "none" },
+    });
+  }
+
+  async function shareEodImage() {
+    try {
+      setBusy("png");
+      const blob = await snapshotEod();
+      if (!blob) return;
+      const file = new File([blob], `fim-do-dia-loureshopping-${dayIso}.png`, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: `Fim do dia · LoureShopping · ${dayLabel}` });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (e: any) {
+      if (e?.name !== "AbortError") toast.error("Não foi possível gerar a imagem do fim do dia.");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -613,11 +650,12 @@ function PdsPage() {
 
       <Dialog open={eodOpen} onOpenChange={setEodOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+          <div ref={eodCaptureRef} className="space-y-3 rounded-xl bg-[#03130b] p-4 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[var(--neon-green)]">
               <Flag className="h-4 w-4" /> Fim do dia · {dayLabel}
             </DialogTitle>
-            <DialogDescription>Resumo completo do dia, pronto para fecho e para colar no grupo da loja.</DialogDescription>
+            <DialogDescription>Resumo do dia. Podes partilhar o texto ou gerar uma imagem PNG com todo o painel PDS, incluindo os indicadores e a tabela completa.</DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-2">
@@ -639,14 +677,15 @@ function PdsPage() {
                       <b className="mr-1">{["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}</b>
                       {r.e.nome}
                     </span>
-                    <span className="shrink-0 tabular-nums font-semibold">{fmtNum(r.pts, 2)} pts · {fmtNum(r.qty, 0)} un</span>
+                    <span className="shrink-0 tabular-nums font-semibold">{fmtNum(r.pts, 2)} pts</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          <pre className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-lg border bg-muted/40 p-2 text-[11px] leading-relaxed">{eodText}</pre>
+          <pre className="whitespace-pre-wrap rounded-lg border border-white/30 bg-[#081a11] p-3 text-[13px] leading-relaxed">{eodText}</pre>
+          </div>
 
           <div className="flex flex-wrap gap-2">
             <button
@@ -666,18 +705,19 @@ function PdsPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setEodOpen(false); void sharePng(); }}
+              onClick={() => void shareEodImage()}
               disabled={busy !== null}
-              className="inline-flex items-center gap-1.5 rounded-md border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-accent disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-[var(--neon-green)]/60 bg-[color:color-mix(in_oklab,var(--neon-green)_10%,transparent)] px-3 py-1.5 text-xs font-semibold text-[var(--neon-green)] hover:bg-accent disabled:opacity-50"
+              title="Gerar uma imagem PNG do resumo Fim do dia para partilhar"
             >
-              <Camera className="h-3.5 w-3.5" /> Partilhar imagem
+              <Camera className="h-3.5 w-3.5" /> {busy === "png" ? "A gerar imagem…" : "Partilhar imagem do resumo"}
             </button>
           </div>
         </DialogContent>
       </Dialog>
 
       <div className="pds-rotate-hint mx-3 mt-2 items-center gap-2 rounded-md border border-[color:var(--neon-blue)]/40 bg-[color:color-mix(in_oklab,var(--neon-blue)_10%,transparent)] px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
-        📱 <span>No telemóvel vê em lista vertical · <b>Copiar/Print geram sempre a imagem horizontal 1280×720</b> como no PC.</span>
+        📱 <span>No telemóvel vê em lista vertical · Copiar e Print capturam o painel PDS; «Fim do dia» gera uma imagem própria do resumo.</span>
       </div>
 
       <div className="pds-scroll p-2 pb-24 md:p-3 md:pb-6">
