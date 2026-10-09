@@ -290,7 +290,9 @@ function PdsPage() {
         const n = normalize(p.categoria ?? p.nome);
         const isFixo = FIXO_CODES.has(code);
         const isRetoma = RETOMA_CODES.has(code);
-        if (isFixo) tvs += q;
+        // A coluna "TV" conta apenas vendas do produto TV; NET, Voz,
+        // Wi-Fi Total e migrações pertencem ao total Fixo, não a TV.
+        if (code === "tv") tvs += q;
         if (code === "migracoes-tv") continue;
         qty += q;
         const isAlarme = code === "alarmes" || code === "alarme" || n.includes("alarme");
