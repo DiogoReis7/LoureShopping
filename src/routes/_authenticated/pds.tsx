@@ -290,7 +290,9 @@ function PdsPage() {
         const n = normalize(p.categoria ?? p.nome);
         const isFixo = FIXO_CODES.has(code);
         const isRetoma = RETOMA_CODES.has(code);
-        if (isFixo) tvs += q;
+        // A coluna TV conta apenas vendas do produto com código "tv".
+        // NET, Voz, Wi-Fi Total e migrações continuam no total Fixo, não em TV.
+        if (code === "tv") tvs += q;
         if (code === "migracoes-tv") continue;
         qty += q;
         const isAlarme = code === "alarmes" || code === "alarme" || n.includes("alarme");
@@ -650,12 +652,12 @@ function PdsPage() {
 
       <Dialog open={eodOpen} onOpenChange={setEodOpen}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
-          <div ref={eodCaptureRef} className="space-y-3 rounded-xl bg-[#03130b] p-4 text-white">
+          <div className="space-y-3 rounded-xl bg-[#03130b] p-4 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[var(--neon-green)]">
               <Flag className="h-4 w-4" /> Fim do dia · {dayLabel}
             </DialogTitle>
-            <DialogDescription>Resumo do dia. Podes partilhar o texto ou gerar uma imagem PNG com todo o painel PDS, incluindo os indicadores e a tabela completa.</DialogDescription>
+            <DialogDescription>Resumo do dia. A imagem inclui apenas este resumo em texto, com o ranking por pontos.</DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-2">
@@ -684,7 +686,7 @@ function PdsPage() {
             )}
           </div>
 
-          <pre className="whitespace-pre-wrap rounded-lg border border-white/30 bg-[#081a11] p-3 text-[13px] leading-relaxed">{eodText}</pre>
+          <pre ref={eodCaptureRef} className="whitespace-pre-wrap break-words rounded-xl border border-white/30 bg-[#03130b] p-6 font-mono text-[22px] leading-[1.75] text-white">{eodText}</pre>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -717,7 +719,7 @@ function PdsPage() {
       </Dialog>
 
       <div className="pds-rotate-hint mx-3 mt-2 items-center gap-2 rounded-md border border-[color:var(--neon-blue)]/40 bg-[color:color-mix(in_oklab,var(--neon-blue)_10%,transparent)] px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
-        📱 <span>No telemóvel vê em lista vertical · Copiar e Print capturam o painel PDS; «Fim do dia» gera uma imagem própria do resumo.</span>
+        📱 <span>«Fim do dia» gera uma imagem apenas com o resumo e o ranking por pontos.</span>
       </div>
 
       <div className="pds-scroll p-2 pb-24 md:p-3 md:pb-6">
