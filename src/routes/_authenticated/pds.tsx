@@ -21,7 +21,7 @@ import { NpsAlertBanner } from "@/components/NpsAlertBanner";
 import { isMedicalLeave, isSalesBlockedShift } from "@/lib/shift-state";
 
 export const Route = createFileRoute("/_authenticated/pds")({
-  head: pageHead("PDS do dia · Strada Outlet", "Painel diário de vendas, senhas e indicadores da loja."),
+  head: pageHead("PDS do dia · LoureShopping", "Painel diário de vendas, senhas e indicadores da loja."),
   errorComponent: ({ error, reset }) => <RouteError error={error} reset={reset} />,
   notFoundComponent: () => <RouteNotFound />,
   component: PdsPage,
@@ -456,7 +456,7 @@ function PdsPage() {
       const file = new File([blob], `pds-${dayIso}.png`, { type: "image/png" });
       // @ts-ignore
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: `PDS ${dayIso}`, text: `PDS · Strada Outlet · ${dayIso}` });
+        await navigator.share({ files: [file], title: `PDS ${dayIso}`, text: `PDS · LoureShopping · ${dayIso}` });
       } else {
         await downloadPng();
       }
@@ -477,7 +477,7 @@ function PdsPage() {
   const eodText = useMemo(() => {
     const medals = ["🥇", "🥈", "🥉"];
     const lines: string[] = [];
-    lines.push(`🏁 FIM DE DIA · STRADA OUTLET · ${dayLabel}`);
+    lines.push(`🏁 FIM DE DIA · LOURESHOPPING · ${dayLabel}`);
     lines.push("———————————————");
     lines.push(`📦 Vendas: ${fmtNum(totalPtsDay, 2)} pts`);
     lines.push(`🔗 COMBINA: ${fmtNum(combinaTotal, 0)} adesões`);
@@ -548,9 +548,9 @@ function PdsPage() {
       setBusy("png");
       const blob = await snapshotEod();
       if (!blob) return;
-      const file = new File([blob], `fim-do-dia-strada-${dayIso}.png`, { type: "image/png" });
+      const file = new File([blob], `fim-do-dia-loureshopping-${dayIso}.png`, { type: "image/png" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: `Fim do dia · Strada Outlet · ${dayLabel}` });
+        await navigator.share({ files: [file], title: `Fim do dia · LoureShopping · ${dayLabel}` });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -569,7 +569,7 @@ function PdsPage() {
   return (
     <div ref={rootRef} className={tvMode ? "bg-background" : undefined}>
       <PageHeader
-        title="PDS · Strada Outlet"
+        title="PDS · LoureShopping"
         subtitle={`${day} ${MONTHS_PT[month - 1]} ${year}`}
         actions={
           <div className="flex items-center gap-2">
@@ -734,7 +734,7 @@ function PdsPage() {
               <div className="rounded-md border bg-card px-3.5 py-3">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                   <div className="pds-neon-word select-none font-extrabold uppercase leading-none">
-                    STRADA OUTLET
+                    LOURESHOPPING
                   </div>
                   <div className="text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     {pdsWeekday}
