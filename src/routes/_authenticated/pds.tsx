@@ -21,7 +21,7 @@ import { NpsAlertBanner } from "@/components/NpsAlertBanner";
 import { isMedicalLeave, isSalesBlockedShift } from "@/lib/shift-state";
 
 export const Route = createFileRoute("/_authenticated/pds")({
-  head: pageHead("PDS do dia · LoureShopping", "Painel diário de vendas, senhas e indicadores da loja."),
+  head: pageHead("PDS do dia · Strada Outlet", "Painel diário de vendas, senhas e indicadores da loja."),
   errorComponent: ({ error, reset }) => <RouteError error={error} reset={reset} />,
   notFoundComponent: () => <RouteNotFound />,
   component: PdsPage,
@@ -392,6 +392,10 @@ function PdsPage() {
     const { toBlob } = await import("html-to-image");
     const node = captureRef.current;
     node.setAttribute("data-capture", "true");
+    // A tabela de vendedores tem altura máxima no ecrã; na captura mostra todos
+    const scrollers = Array.from(node.querySelectorAll<HTMLElement>(".pds-vendor-scroll"));
+    const prevStyles = scrollers.map((el) => [el.style.maxHeight, el.style.overflow] as const);
+    scrollers.forEach((el) => { el.style.maxHeight = "none"; el.style.overflow = "visible"; });
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     try {
       return await toBlob(node, {
@@ -403,6 +407,7 @@ function PdsPage() {
         style: { width: "1280px", margin: "0", transform: "none" },
       });
     } finally {
+      scrollers.forEach((el, i) => { el.style.maxHeight = prevStyles[i][0]; el.style.overflow = prevStyles[i][1]; });
       node.removeAttribute("data-capture");
     }
   }
@@ -451,7 +456,7 @@ function PdsPage() {
       const file = new File([blob], `pds-${dayIso}.png`, { type: "image/png" });
       // @ts-ignore
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: `PDS ${dayIso}`, text: `PDS · LoureShopping · ${dayIso}` });
+        await navigator.share({ files: [file], title: `PDS ${dayIso}`, text: `PDS · Strada Outlet · ${dayIso}` });
       } else {
         await downloadPng();
       }
@@ -472,7 +477,7 @@ function PdsPage() {
   const eodText = useMemo(() => {
     const medals = ["🥇", "🥈", "🥉"];
     const lines: string[] = [];
-    lines.push(`🏁 FIM DE DIA · LOURESHOPPING · ${dayLabel}`);
+    lines.push(`🏁 FIM DE DIA · STRADA OUTLET · ${dayLabel}`);
     lines.push("———————————————");
     lines.push(`📦 Vendas: ${fmtNum(totalPtsDay, 2)} pts`);
     lines.push(`🔗 COMBINA: ${fmtNum(combinaTotal, 0)} adesões`);
@@ -543,9 +548,9 @@ function PdsPage() {
       setBusy("png");
       const blob = await snapshotEod();
       if (!blob) return;
-      const file = new File([blob], `fim-do-dia-loureshopping-${dayIso}.png`, { type: "image/png" });
+      const file = new File([blob], `fim-do-dia-strada-${dayIso}.png`, { type: "image/png" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: `Fim do dia · LoureShopping · ${dayLabel}` });
+        await navigator.share({ files: [file], title: `Fim do dia · Strada Outlet · ${dayLabel}` });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -564,7 +569,7 @@ function PdsPage() {
   return (
     <div ref={rootRef} className={tvMode ? "bg-background" : undefined}>
       <PageHeader
-        title="PDS · LoureShopping"
+        title="PDS · Strada Outlet"
         subtitle={`${day} ${MONTHS_PT[month - 1]} ${year}`}
         actions={
           <div className="flex items-center gap-2">
@@ -729,7 +734,7 @@ function PdsPage() {
               <div className="rounded-md border bg-card px-3.5 py-3">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                   <div className="pds-neon-word select-none font-extrabold uppercase leading-none">
-                    LOURESHOPPING
+                    STRADA OUTLET
                   </div>
                   <div className="text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     {pdsWeekday}
@@ -953,7 +958,7 @@ function PdsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="overflow-auto" style={{ maxHeight: "min(48vh, 420px)" }}>
+                <div className="pds-vendor-scroll overflow-auto" style={{ maxHeight: "min(48vh, 420px)" }}>
                   <table className="w-full min-w-[720px] text-xs md:text-sm">
                     <thead className="sticky top-0 z-10 bg-card">
                       <tr className="border-b text-[10px] uppercase tracking-wide text-muted-foreground">
